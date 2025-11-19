@@ -1,0 +1,250 @@
+﻿@model BookAppointmentViewModel
+
+@{
+    ViewData["Title"] = "Book Appointment";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="fas fa-calendar-plus"></i> Book New Appointment</h4>
+            </div>
+            <div class="card-body">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form asp-action="Book" method="post" id="appointmentForm">
+                    @Html.AntiForgeryToken()
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <h5>Please fix the following errors:</h5>
+                            <ul>
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold">Select Doctor *</label>
+                        <select name="DoctorId" class="form-select" id="doctorSelect" required>
+                            <option value="">-- Select Doctor --</option>
+                            @if (Model.Doctors != null && Model.Doctors.Any())
+                            {
+                                @foreach (var doctor in Model.Doctors)
+                                {
+                                    <option value="@doctor.DoctorId">@doctor.Name - @doctor.Specialization</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="" disabled>No doctors available</option>
+                            }
+                        </select>
+                        @if (Model.Doctors == null || !Model.Doctors.Any())
+                        {
+                            <div class="text-danger mt-1">No doctors available. Please contact administrator.</div>
+                        }
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-bold">Appointment Date *</label>
+                                <input name="AppointmentDate" class="form-control" type="date" id="appointmentDate"
+                                       value="@Model.AppointmentDate.ToString("yyyy-MM-dd")"
+                                       min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-bold">Appointment Time *</label>
+                                <select name="AppointmentTime" class="form-select" id="appointmentTime" required>
+                                    <option value="">-- Select Time --</option>
+                                    @if (Model.AvailableTimeSlots != null && Model.AvailableTimeSlots.Any())
+                                    {
+                                        @foreach (var time in Model.AvailableTimeSlots)
+                                        {
+                                            <option value="@time">@time.ToString(@"hh\:mm")</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option value="" disabled>No time slots available</option>
+                                    }
+                                </select>
+                                <div id="timeSlotStatus" class="form-text"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label class="form-label fw-bold">Additional Notes</label>
+                        <textarea name="Notes" class="form-control" rows="3"
+                                  placeholder="Any specific concerns, symptoms, or information you'd like to share with the doctor..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-lg" id="submitBtn"
+                                @(Model.Doctors == null || !Model.Doctors.Any() ? "disabled" : "")>
+                            <i class="fas fa-calendar-check"></i> Book Appointment
+                        </button>
+                        <a asp-action="MyAppointments" class="btn btn-secondary">
+                            <i class="fas fa-list"></i> View My Appointments
+                        </a>
+                        <a asp-action="DebugInfo" class="btn btn-info">
+                            <i class="fas fa-bug"></i> Debug Info
+                        </a>
+                        <a asp-action="TestBooking" class="btn btn-warning">
+                            <i class="fas fa-vial"></i> Test Booking
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Booking Information</h5>
+            </div>
+            <div class="card-body">
+                <h6><i class="fas fa-clock me-2"></i>Clinic Hours</h6>
+                <ul class="list-unstyled">
+                    <li>Monday - Friday: 9:00 AM - 5:00 PM</li>
+                    <li>Saturday: 9:00 AM - 1:00 PM</li>
+                    <li>Sunday: Closed</li>
+                </ul>
+
+                <hr>
+
+                <h6><i class="fas fa-phone me-2"></i>Contact Information</h6>
+                <ul class="list-unstyled">
+                    <li><strong>Phone:</strong> (000) 123-4567</li>
+                    <li><strong>Email:</strong> info@clinic.com</li>
+                    <li><strong>Address:</strong> Poblacion, Trinidad, Bohol</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Tips</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i>Book at least 24 hours in advance</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Arrive 15 minutes before your appointment</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Bring your ID and insurance card</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Cancel appointments you can't attend</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            console.log("Appointment booking page loaded");
+
+            // Check if doctors are available on page load
+            if ($('#doctorSelect option').length <= 1) {
+                console.log("No doctors available");
+                $('#submitBtn').prop('disabled', true);
+                $('#timeSlotStatus').text('No doctors available').addClass('text-danger');
+            }
+
+            // Check available time slots when doctor or date changes
+            $('#doctorSelect, #appointmentDate').change(function() {
+                console.log("Doctor or date changed");
+                checkAvailableTimeSlots();
+            });
+
+            // Form submission handling
+            $('#appointmentForm').on('submit', function() {
+                console.log("Form submitted - disabling submit button");
+                $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Booking...');
+            });
+
+            // Auto-dismiss alerts after 5 seconds
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 5000);
+
+            // Initial availability check
+            if ($('#doctorSelect').val() && $('#appointmentDate').val()) {
+                checkAvailableTimeSlots();
+            }
+        });
+
+        async function checkAvailableTimeSlots() {
+            const doctorId = $('#doctorSelect').val();
+            const date = $('#appointmentDate').val();
+
+            console.log("Checking availability for doctor:", doctorId, "date:", date);
+
+            if (!doctorId || !date) {
+                $('#timeSlotStatus').text('Please select a doctor and date to see available time slots').removeClass('text-success text-danger').addClass('text-warning');
+                return;
+            }
+
+            try {
+                $('#timeSlotStatus').text('Checking availability...').removeClass('text-success text-danger').addClass('text-info');
+
+                const response = await fetch('@Url.Action("GetAvailableTimeSlots", "Appointment")?doctorId=' + doctorId + '&date=' + date);
+                const result = await response.json();
+
+                console.log("Availability check result:", result);
+
+                if (result.success) {
+                    const availableSlots = result.slots;
+                    const timeSelect = $('#appointmentTime');
+                    const selectedTime = timeSelect.val();
+
+                    // Update time slots
+                    timeSelect.empty().append('<option value="">-- Select Time --</option>');
+                    availableSlots.forEach(slot => {
+                        const timeString = slot.substring(0, 5); // Convert "09:00:00" to "09:00"
+                        timeSelect.append(new Option(timeString, slot));
+                    });
+
+                    // Restore selected time if still available
+                    if (selectedTime && availableSlots.includes(selectedTime)) {
+                        timeSelect.val(selectedTime);
+                    }
+
+                    if (availableSlots.length > 0) {
+                        $('#timeSlotStatus').text(availableSlots.length + ' time slots available').removeClass('text-danger').addClass('text-success');
+                    } else {
+                        $('#timeSlotStatus').text('No available time slots for selected date').removeClass('text-success').addClass('text-danger');
+                    }
+                } else {
+                    $('#timeSlotStatus').text('Error checking availability: ' + result.message).removeClass('text-success').addClass('text-danger');
+                }
+            } catch (error) {
+                console.error('Error checking availability:', error);
+                $('#timeSlotStatus').text('Error checking availability').removeClass('text-success').addClass('text-danger');
+            }
+        }
+    </script>
+}

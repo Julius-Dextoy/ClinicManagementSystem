@@ -1,0 +1,32 @@
+﻿@model string
+
+@{
+    var badgeClass = Model switch
+    {
+        "Approved" => "success",
+        "Pending" => "warning",
+        "Cancelled" => "danger",
+        "Completed" => "info",
+        _ => "secondary"
+    };
+}
+
+<span class="badge bg-@badgeClass">
+    @if (Model == "Pending")
+    {
+        <i class="fas fa-clock me-1"></i>
+    }
+    else if (Model == "Approved")
+    {
+        <i class="fas fa-check-circle me-1"></i>
+    }
+    else if (Model == "Cancelled")
+    {
+        <i class="fas fa-times-circle me-1"></i>
+    }
+    else if (Model == "Completed")
+    {
+        <i class="fas fa-check-double me-1"></i>
+    }
+    @Model
+</span>

@@ -1,0 +1,51 @@
+﻿<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+    // Custom validation methods
+    $.validator.addMethod("futureDate", function(value, element) {
+        if (!value) return true;
+        var selectedDate = new Date(value);
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return selectedDate >= today;
+    }, "Please select a future date.");
+
+    $.validator.addMethod("timeSlot", function(value, element) {
+        if (!value) return true;
+        var time = value.split(':');
+        var hours = parseInt(time[0]);
+        var minutes = parseInt(time[1]);
+        return hours >= 9 && hours <= 17 && (minutes === 0 || minutes === 30);
+    }, "Please select a valid time slot between 9:00 AM and 5:00 PM.");
+
+    // Apply custom validation
+    $(document).ready(function() {
+        $("form").each(function() {
+            $(this).validate({
+                errorClass: "text-danger",
+                errorElement: "span",
+                highlight: function(element) {
+                    $(element).addClass("is-invalid").removeClass("is-valid");
+                },
+                unhighlight: function(element) {
+                    $(element).removeClass("is-invalid").addClass("is-valid");
+                }
+            });
+        });
+
+        // Future date validation for appointment dates
+        $("input[type='date']").each(function() {
+            $(this).rules("add", {
+                futureDate: true
+            });
+        });
+
+        // Time slot validation
+        $("select[name='AppointmentTime']").each(function() {
+            $(this).rules("add", {
+                timeSlot: true
+            });
+        });
+    });
+</script>

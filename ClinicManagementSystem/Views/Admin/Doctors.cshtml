@@ -1,0 +1,125 @@
+﻿@model List<Doctor>
+
+@{
+    ViewData["Title"] = "Manage Doctors";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4>Manage Doctors</h4>
+    <a asp-action="AddDoctor" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New Doctor
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-4">
+                <i class="fas fa-user-md fa-3x text-muted mb-3"></i>
+                <h5>No Doctors Found</h5>
+                <p class="text-muted">Get started by adding your first doctor.</p>
+                <a asp-action="AddDoctor" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add First Doctor
+                </a>
+            </div>
+        }
+        else
+        {
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Specialization</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var doctor in Model)
+                    {
+                        <tr>
+                            <td>@doctor.Name</td>
+                            <td>@doctor.Specialization</td>
+                            <td>@doctor.Phone</td>
+                            <td>@(string.IsNullOrEmpty(doctor.Address) ? "Not provided" : doctor.Address)</td>
+                            <td>
+                                <span class="badge bg-@(doctor.IsActive ? "success" : "danger")">
+                                    @(doctor.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-action="EditDoctor" asp-route-id="@doctor.DoctorId"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                        data-bs-toggle="modal" data-bs-target="#deleteModal-@doctor.DoctorId">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+
+                                <!-- Delete Confirmation Modal -->
+                                <div class="modal fade" id="deleteModal-@doctor.DoctorId" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirm Delete</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete Dr. @doctor.Name?
+                                                @if (doctor.IsActive)
+                                                {
+                                                    <span class="text-warning d-block mt-2">
+                                                        <i class="fas fa-exclamation-triangle"></i>
+                                                        This doctor is currently active and will be marked as inactive instead of permanent deletion.
+                                                    </span>
+                                                }
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form asp-action="DeleteDoctor" asp-route-id="@doctor.DoctorId" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-danger">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 5000);
+    </script>
+}

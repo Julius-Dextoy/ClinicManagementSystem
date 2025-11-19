@@ -1,0 +1,514 @@
+﻿@model List<Appointment>
+
+@{
+    ViewData["Title"] = "Manage Appointments";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold text-primary">
+                <i class="fas fa-calendar-alt me-2"></i>Manage Appointments
+            </h1>
+            <p class="text-muted">View and manage all appointments in the system</p>
+        </div>
+        <div>
+            <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+            <a asp-controller="Appointment" asp-action="AllAppointments" class="btn btn-outline-info">
+                <i class="fas fa-list me-2"></i>View All Appointments
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Appointments
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.Count(a => a.Status == "Pending")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Approved
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.Count(a => a.Status == "Approved")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Today's Appointments
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.Count(a => a.AppointmentDate.Date == DateTime.Today && a.Status != "Cancelled")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter and Search -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-white py-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-filter me-2"></i>Filter Appointments
+                    </h6>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search appointments..." id="searchInput">
+                        <button class="btn btn-outline-primary" type="button" onclick="searchAppointments()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Status</label>
+                    <select class="form-select" id="statusFilter" onchange="filterAppointments()">
+                        <option value="">All Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Cancelled">Cancelled</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Date Range</label>
+                    <select class="form-select" id="dateFilter" onchange="filterAppointments()">
+                        <option value="">All Dates</option>
+                        <option value="today">Today</option>
+                        <option value="tomorrow">Tomorrow</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Doctor</label>
+                    <select class="form-select" id="doctorFilter" onchange="filterAppointments()">
+                        <option value="">All Doctors</option>
+                        @foreach (var doctor in Model.Select(a => a.Doctor?.Name).Distinct().Where(d => !string.IsNullOrEmpty(d)))
+                        {
+                            <option value="@doctor">@doctor</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">&nbsp;</label>
+                    <div>
+                        <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                            <i class="fas fa-redo me-2"></i>Reset Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-list me-2"></i>Appointments List
+                </h6>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-cog me-2"></i>Actions
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-file-export me-2"></i>Export Report</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2"></i>Print</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-sync me-2"></i>Refresh</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Appointments Found</h4>
+                    <p class="text-muted">There are no appointments scheduled in the system yet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="appointmentsTable" width="100%" cellspacing="0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Appointment ID</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var appointment in Model.OrderByDescending(a => a.AppointmentDate).ThenBy(a => a.AppointmentTime))
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary">#@appointment.AppointmentId</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; font-size: 12px;">
+                                                @GetInitials(appointment.Patient?.Name ?? "Unknown")
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">@appointment.Patient?.Name</div>
+                                                <small class="text-muted">Patient</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-success text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; font-size: 12px;">
+                                                @GetInitials(appointment.Doctor?.Name ?? "Unknown")
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">@appointment.Doctor?.Name</div>
+                                                <small class="text-muted">@appointment.Doctor?.Specialization</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">@appointment.AppointmentDate.ToString("MMM dd, yyyy")</div>
+                                        <small class="text-muted">@appointment.AppointmentTime.ToString(@"hh\:mm")</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@GetStatusBadge(appointment.Status)">
+                                            @if (appointment.Status == "Pending")
+                                            {
+                                                <i class="fas fa-clock me-1"></i>
+                                            }
+                                            else if (appointment.Status == "Approved")
+                                            {
+                                                <i class="fas fa-check-circle me-1"></i>
+                                            }
+                                            else if (appointment.Status == "Cancelled")
+                                            {
+                                                <i class="fas fa-times-circle me-1"></i>
+                                            }
+                                            else if (appointment.Status == "Completed")
+                                            {
+                                                <i class="fas fa-check-double me-1"></i>
+                                            }
+                                            @appointment.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (string.IsNullOrEmpty(appointment.Notes))
+                                        {
+                                            <span class="text-muted">No notes</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-truncate" style="max-width: 200px;" title="@appointment.Notes">
+                                                @appointment.Notes
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <small>@appointment.CreatedAt.ToString("MMM dd, yyyy")</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <!-- Status Update Dropdown -->
+                                            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" title="Update Status">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <form method="post" asp-action="UpdateAppointmentStatus" class="d-inline">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="appointmentId" value="@appointment.AppointmentId" />
+                                                        <input type="hidden" name="status" value="Approved" />
+                                                        <button type="submit" class="dropdown-item text-success">
+                                                            <i class="fas fa-check me-2"></i>Approve
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form method="post" asp-action="UpdateAppointmentStatus" class="d-inline">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="appointmentId" value="@appointment.AppointmentId" />
+                                                        <input type="hidden" name="status" value="Pending" />
+                                                        <button type="submit" class="dropdown-item text-warning">
+                                                            <i class="fas fa-clock me-2"></i>Mark Pending
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form method="post" asp-action="UpdateAppointmentStatus" class="d-inline">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="appointmentId" value="@appointment.AppointmentId" />
+                                                        <input type="hidden" name="status" value="Completed" />
+                                                        <button type="submit" class="dropdown-item text-info">
+                                                            <i class="fas fa-check-double me-2"></i>Mark Completed
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <form method="post" asp-action="UpdateAppointmentStatus" class="d-inline">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="appointmentId" value="@appointment.AppointmentId" />
+                                                        <input type="hidden" name="status" value="Cancelled" />
+                                                        <button type="submit" class="dropdown-item text-danger"
+                                                                onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                                                            <i class="fas fa-times me-2"></i>Cancel
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                        <a asp-action="AppointmentDetails" asp-route-id="@appointment.AppointmentId"
+                                           class="btn btn-sm btn-outline-info" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetInitials(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+            return "??";
+
+        var names = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (names.Length >= 2)
+            return $"{names[0][0]}{names[1][0]}".ToUpper();
+        else if (names.Length == 1)
+            return names[0].Length >= 2 ? names[0].Substring(0, 2).ToUpper() : names[0].ToUpper();
+        else
+            return "??";
+    }
+
+    public string GetStatusBadge(string status)
+    {
+        return status switch
+        {
+            "Completed" => "success",
+            "Pending" => "warning",
+            "Approved" => "info",
+            "Cancelled" => "danger",
+            _ => "secondary"
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        // Simple filtering functionality
+        function filterAppointments() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            const doctorFilter = document.getElementById('doctorFilter').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            const rows = document.querySelectorAll('#appointmentsTable tbody tr');
+
+            rows.forEach(row => {
+                let showRow = true;
+
+                // Status filter
+                if (statusFilter) {
+                    const status = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+                    if (!status.includes(statusFilter.toLowerCase())) {
+                        showRow = false;
+                    }
+                }
+
+                // Date filter
+                if (dateFilter && showRow) {
+                    const dateText = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+                    const today = new Date();
+                    const rowDate = new Date(dateText);
+
+                    switch (dateFilter) {
+                        case 'today':
+                            if (rowDate.toDateString() !== today.toDateString()) showRow = false;
+                            break;
+                        case 'tomorrow':
+                            const tomorrow = new Date(today);
+                            tomorrow.setDate(tomorrow.getDate() + 1);
+                            if (rowDate.toDateString() !== tomorrow.toDateString()) showRow = false;
+                            break;
+                        case 'week':
+                            const weekStart = new Date(today);
+                            weekStart.setDate(today.getDate() - today.getDay());
+                            const weekEnd = new Date(weekStart);
+                            weekEnd.setDate(weekStart.getDate() + 6);
+                            if (rowDate < weekStart || rowDate > weekEnd) showRow = false;
+                            break;
+                        case 'month':
+                            if (rowDate.getMonth() !== today.getMonth() || rowDate.getFullYear() !== today.getFullYear()) showRow = false;
+                            break;
+                    }
+                }
+
+                // Doctor filter
+                if (doctorFilter && showRow) {
+                    const doctor = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                    if (!doctor.includes(doctorFilter.toLowerCase())) {
+                        showRow = false;
+                    }
+                }
+
+                // Search filter
+                if (searchTerm && showRow) {
+                    const rowText = row.textContent.toLowerCase();
+                    if (!rowText.includes(searchTerm)) {
+                        showRow = false;
+                    }
+                }
+
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+
+        function searchAppointments() {
+            filterAppointments();
+        }
+
+        function resetFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            document.getElementById('doctorFilter').value = '';
+            document.getElementById('searchInput').value = '';
+            filterAppointments();
+        }
+
+        // Initialize DataTable if needed
+        $(document).ready(function () {
+            $('#appointmentsTable').DataTable({
+                pageLength: 10,
+                responsive: true,
+                order: [[3, 'desc']] // Sort by date descending
+            });
+        });
+    </script>
+
+    <style>
+        .avatar-circle {
+            font-weight: bold;
+        }
+
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+        }
+
+        .card-header {
+            border-bottom: 1px solid #e3e6f0;
+            border-radius: 10px 10px 0 0 !important;
+        }
+
+        .border-left-primary {
+            border-left: 4px solid #4e73df !important;
+        }
+
+        .border-left-success {
+            border-left: 4px solid #1cc88a !important;
+        }
+
+        .border-left-warning {
+            border-left: 4px solid #f6c23e !important;
+        }
+
+        .border-left-info {
+            border-left: 4px solid #36b9cc !important;
+        }
+
+        .badge {
+            font-size: 0.75em;
+        }
+    </style>
+}

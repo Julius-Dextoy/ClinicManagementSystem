@@ -1,0 +1,227 @@
+﻿@model List<Appointment>
+
+@{
+    ViewData["Title"] = "My Appointments";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4><i class="fas fa-list"></i> My Appointments</h4>
+    @if (User.IsInRole("Patient"))
+    {
+        <a asp-action="Book" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Book New Appointment
+        </a>
+    }
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        <h5><i class="fas fa-info-circle me-2"></i>No appointments found!</h5>
+        <p>
+            @if (User.IsInRole("Patient"))
+            {
+                <text>You haven't booked any appointments yet. <a asp-action="Book" class="alert-link">Book your first appointment</a>.</text>
+            }
+            else
+            {
+                <text>You don't have any appointments scheduled.</text>
+            }
+        </p>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            @if (User.IsInRole("Doctor"))
+                            {
+                                <th>Patient</th>
+                            }
+                            else
+                            {
+                                <th>Doctor</th>
+                            }
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var appointment in Model)
+                        {
+                            <tr>
+                                @if (User.IsInRole("Doctor"))
+                                {
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm bg-success rounded-circle d-flex align-items-center justify-content-center me-2">
+                                                <span class="text-white fw-bold small">@GetInitials(appointment.Patient?.Name ?? "U")</span>
+                                            </div>
+                                            <div>
+                                                <strong>@appointment.Patient?.Name</strong>
+                                                <div class="text-muted small">@appointment.Patient?.User?.Email</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-2">
+                                                <span class="text-white fw-bold small">@GetInitials(appointment.Doctor?.Name ?? "D")</span>
+                                            </div>
+                                            <div>
+                                                <strong>@appointment.Doctor?.Name</strong>
+                                                <div class="text-muted small">@appointment.Doctor?.Specialization</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                }
+                                <td>@appointment.AppointmentDate.ToString("MMM dd, yyyy")</td>
+                                <td>@appointment.AppointmentTime.ToString(@"hh\:mm")</td>
+                                <td>
+                                    <span class="badge bg-@GetStatusBadge(appointment.Status)">
+                                        @appointment.Status
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(appointment.Notes))
+                                    {
+                                        <span class="text-truncate d-inline-block" style="max-width: 200px;"
+                                              title="@appointment.Notes">
+                                            @appointment.Notes
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No notes</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="AppointmentDetails" asp-route-id="@appointment.AppointmentId"
+                                           class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+
+                                        @if (User.IsInRole("Patient") && (appointment.Status == "Pending" || appointment.Status == "Approved") && appointment.AppointmentDate >= DateTime.Today)
+                                        {
+                                            <form asp-action="CancelAppointment" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@appointment.AppointmentId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                        title="Cancel Appointment"
+                                                        onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </form>
+                                        }
+
+                                        @if (User.IsInRole("Doctor") && appointment.Status == "Pending")
+                                        {
+                                            <form asp-action="UpdateAppointmentStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="appointmentId" value="@appointment.AppointmentId" />
+                                                <input type="hidden" name="status" value="Approved" />
+                                                <button type="submit" class="btn btn-sm btn-outline-success"
+                                                        title="Approve Appointment"
+                                                        onclick="return confirm('Approve this appointment?')">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                        }
+
+                                        @if (User.IsInRole("Doctor") && appointment.Status == "Approved" && appointment.AppointmentDate <= DateTime.Today)
+                                        {
+                                            <form asp-action="CompleteAppointment" method="post" class="d-inline">
+                                                <input type="hidden" name="appointmentId" value="@appointment.AppointmentId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-info"
+                                                        title="Mark Complete"
+                                                        onclick="return confirm('Mark this appointment as completed?')">
+                                                    <i class="fas fa-flag-checkered"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">
+                <i class="fas fa-info-circle"></i>
+                Showing @Model.Count appointments •
+                @Model.Count(a => a.Status == "Pending") pending •
+                @Model.Count(a => a.Status == "Approved") approved •
+                @Model.Count(a => a.Status == "Completed") completed
+            </small>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 5000);
+
+        // Initialize tooltips
+        $(function () {
+            $('[title]').tooltip();
+        });
+    </script>
+}
+
+@functions {
+    public string GetStatusBadge(string status)
+    {
+        return status switch
+        {
+            "Approved" => "success",
+            "Pending" => "warning",
+            "Cancelled" => "danger",
+            "Completed" => "info",
+            _ => "secondary"
+        };
+    }
+
+    public string GetInitials(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+            return "??";
+
+        var names = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (names.Length >= 2)
+            return $"{names[0][0]}{names[1][0]}".ToUpper();
+        else if (names.Length == 1)
+            return names[0].Length >= 2 ? names[0].Substring(0, 2).ToUpper() : names[0].ToUpper();
+        else
+            return "??";
+    }
+}

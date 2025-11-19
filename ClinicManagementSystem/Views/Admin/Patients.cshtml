@@ -1,0 +1,695 @@
+﻿@model List<Patient>
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Manage Patients";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold text-primary">
+                <i class="fas fa-users me-2"></i>Manage Patients
+            </h1>
+            <p class="text-muted">View and manage all registered patients in the system</p>
+        </div>
+        <div>
+            <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Patients
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                New This Month
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.Count(p => p.RegistrationDate.Month == DateTime.Now.Month && p.RegistrationDate.Year == DateTime.Now.Year)
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-plus fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Average Age
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @(Model.Any() ? Model.Average(p => p.Age).ToString("0") : "0")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-birthday-cake fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Recent Registrations
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.Count(p => p.RegistrationDate >= DateTime.Now.AddDays(-7))
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-week fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patients Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-list me-2"></i>Patient List
+                </h6>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-download me-2"></i>Export
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="exportToPDF()"><i class="fas fa-file-pdf me-2"></i>PDF</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="exportToExcel()"><i class="fas fa-file-excel me-2"></i>Excel</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="exportToCSV()"><i class="fas fa-file-csv me-2"></i>CSV</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Patients Found</h4>
+                    <p class="text-muted">There are no patients registered in the system yet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="patientsTable" width="100%" cellspacing="0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Patient ID</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Registration Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var patient in Model.OrderByDescending(p => p.RegistrationDate))
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary">#@patient.PatientId</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 14px;">
+                                                @GetInitials(patient.Name)
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">@patient.Name</div>
+                                                <small class="text-muted">ID: @patient.PatientId</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold">@patient.Age</span>
+                                        <small class="text-muted d-block">years</small>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(patient.Phone))
+                                        {
+                                            <a href="tel:@patient.Phone" class="text-decoration-none">
+                                                <i class="fas fa-phone me-2 text-muted"></i>@patient.Phone
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not provided</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(patient.User?.Email))
+                                        {
+                                            <a href="mailto:@patient.User.Email" class="text-decoration-none">
+                                                <i class="fas fa-envelope me-2 text-muted"></i>@patient.User.Email
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No email</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="text-nowrap">@patient.RegistrationDate.ToString("MMM dd, yyyy")</div>
+                                        <small class="text-muted">@patient.RegistrationDate.ToString("hh:mm tt")</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>Active
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a asp-controller="Admin" asp-action="PatientDetails" asp-route-id="@patient.PatientId"
+                                               class="btn btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+
+                                            <!-- Edit Button -->
+                                            <button type="button" class="btn btn-outline-warning" title="Edit Patient"
+                                                    data-bs-toggle="modal" data-bs-target="#editPatientModal@patient.PatientId">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+
+                                            <!-- Delete Button -->
+                                            <button type="button" class="btn btn-outline-danger" title="Delete Patient"
+                                                    data-bs-toggle="modal" data-bs-target="#deletePatientModal@patient.PatientId">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+
+                                        <!-- Edit Patient Modal -->
+                                        <div class="modal fade" id="editPatientModal@patient.PatientId" tabindex="-1">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Edit Patient - @patient.Name</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <form asp-controller="Admin" asp-action="EditPatient" method="post">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="patientId" value="@patient.PatientId" />
+                                                        <div class="modal-body">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group mb-3">
+                                                                        <label class="form-label fw-bold">Full Name *</label>
+                                                                        <input type="text" class="form-control" name="name" value="@patient.Name" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group mb-3">
+                                                                        <label class="form-label fw-bold">Age *</label>
+                                                                        <input type="number" class="form-control" name="age" value="@patient.Age" min="1" max="120" required>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group mb-3">
+                                                                        <label class="form-label fw-bold">Phone Number</label>
+                                                                        <input type="tel" class="form-control" name="phone" value="@patient.Phone">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group mb-3">
+                                                                        <label class="form-label fw-bold">Email</label>
+                                                                        <input type="email" class="form-control" value="@patient.User?.Email" readonly>
+                                                                        <small class="form-text text-muted">Email cannot be changed</small>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group mb-3">
+                                                                <label class="form-label fw-bold">Address</label>
+                                                                <textarea class="form-control" name="address" rows="2">@patient.Address</textarea>
+                                                            </div>
+                                                            <div class="form-group mb-3">
+                                                                <label class="form-label fw-bold">Medical History</label>
+                                                                <textarea class="form-control" name="medicalHistory" rows="3" placeholder="Update medical history...">@patient.MedicalHistory</textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary">
+                                                                <i class="fas fa-save me-2"></i>Update Patient
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Delete Patient Modal -->
+                                        <div class="modal fade" id="deletePatientModal@patient.PatientId" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Confirm Delete</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="alert alert-warning">
+                                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                                            <strong>Warning:</strong> This action cannot be undone!
+                                                        </div>
+                                                        <p>Are you sure you want to delete patient <strong>@patient.Name</strong>?</p>
+                                                        <p class="text-muted">This will remove all their appointment history and personal data from the system.</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <form asp-controller="Admin" asp-action="DeletePatient" method="post" class="d-inline">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="patientId" value="@patient.PatientId" />
+                                                            <button type="submit" class="btn btn-danger">
+                                                                <i class="fas fa-trash me-2"></i>Delete Patient
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetInitials(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+            return "??";
+
+        var names = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (names.Length >= 2)
+            return $"{names[0][0]}{names[1][0]}".ToUpper();
+        else if (names.Length == 1)
+            return names[0].Length >= 2 ? names[0].Substring(0, 2).ToUpper() : names[0].ToUpper();
+        else
+            return "??";
+    }
+}
+
+@section Scripts {
+    <!-- Include required libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        // Initialize DataTable
+        $(document).ready(function () {
+            $('#patientsTable').DataTable({
+                pageLength: 10,
+                responsive: true,
+                order: [[5, 'desc']], // Sort by registration date descending
+                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search patients..."
+                }
+            });
+
+            // Auto-dismiss alerts after 5 seconds
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 5000);
+        });
+
+        // Export to PDF function
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add title
+            doc.setFontSize(18);
+            doc.setTextColor(40, 40, 40);
+            doc.text('Patient List - Clinic Management System', 14, 22);
+
+            // Add date
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+
+            // Add statistics
+            doc.setFontSize(12);
+            doc.setTextColor(40, 40, 40);
+            doc.text(`Total Patients: ${@Model.Count}`, 14, 40);
+            doc.text(`New This Month: ${@Model.Count(p => p.RegistrationDate.Month == DateTime.Now.Month && p.RegistrationDate.Year == DateTime.Now.Year)}`, 14, 47);
+
+            // Prepare table data
+            const tableColumn = ["ID", "Name", "Age", "Phone", "Email", "Registration Date", "Status"];
+            const tableRows = [];
+
+            @foreach (var patient in Model.OrderByDescending(p => p.RegistrationDate))
+            {
+                    <text>
+                    tableRows.push([
+                        "#@patient.PatientId",
+                        "@patient.Name",
+                        "@patient.Age",
+                        "@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)",
+                        "@(patient.User?.Email ?? "No email")",
+                        "@patient.RegistrationDate.ToString("MMM dd, yyyy")",
+                        "Active"
+                    ]);
+                    </text>
+            }
+
+            // Add table
+            doc.autoTable({
+                head: [tableColumn],
+                body: tableRows,
+                startY: 55,
+                theme: 'grid',
+                styles: {
+                    fontSize: 9,
+                    cellPadding: 3,
+                    overflow: 'linebreak'
+                },
+                headStyles: {
+                    fillColor: [79, 115, 223],
+                    textColor: 255,
+                    fontStyle: 'bold'
+                },
+                alternateRowStyles: {
+                    fillColor: [245, 245, 245]
+                },
+                margin: { top: 55 }
+            });
+
+            // Add footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 10, { align: 'center' });
+            }
+
+            // Save the PDF
+            doc.save(`patients_${new Date().toISOString().split('T')[0]}.pdf`);
+        }
+
+        // Export to Excel function
+        function exportToExcel() {
+            // Prepare data for Excel
+            const excelData = [
+                ["Patient ID", "Name", "Age", "Phone", "Email", "Address", "Medical History", "Registration Date", "Status"]
+            ];
+
+            @foreach (var patient in Model.OrderByDescending(p => p.RegistrationDate))
+            {
+                    <text>
+                    excelData.push([
+                        "@patient.PatientId",
+                        "@patient.Name",
+                        "@patient.Age",
+                        "@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)",
+                        "@(patient.User?.Email ?? "No email")",
+                        "@(string.IsNullOrEmpty(patient.Address) ? "Not provided" : patient.Address.Replace("\"", "'"))",
+                        "@(string.IsNullOrEmpty(patient.MedicalHistory) ? "Not provided" : patient.MedicalHistory.Replace("\"", "'"))",
+                        "@patient.RegistrationDate.ToString("MMM dd, yyyy hh:mm tt")",
+                        "Active"
+                    ]);
+                    </text>
+            }
+
+            // Create workbook and worksheet
+            const ws = XLSX.utils.aoa_to_sheet(excelData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Patients");
+
+            // Style the header row
+            if (!ws['!cols']) ws['!cols'] = [];
+            ws['!cols'][0] = { width: 10 }; // ID
+            ws['!cols'][1] = { width: 25 }; // Name
+            ws['!cols'][2] = { width: 8 };  // Age
+            ws['!cols'][3] = { width: 15 }; // Phone
+            ws['!cols'][4] = { width: 25 }; // Email
+            ws['!cols'][5] = { width: 30 }; // Address
+            ws['!cols'][6] = { width: 40 }; // Medical History
+            ws['!cols'][7] = { width: 20 }; // Registration Date
+            ws['!cols'][8] = { width: 12 }; // Status
+
+            // Save the Excel file
+            XLSX.writeFile(wb, `patients_${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+
+        // Export to CSV function
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+
+            // Add header
+            csvContent += "Patient ID,Name,Age,Phone,Email,Registration Date,Status\r\n";
+
+            // Add data rows
+            @foreach (var patient in Model.OrderByDescending(p => p.RegistrationDate))
+            {
+                    <text>
+                    csvContent += `"@patient.PatientId","@patient.Name","@patient.Age","@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)","@(patient.User?.Email ?? "No email")","@patient.RegistrationDate.ToString("MMM dd, yyyy")","Active"\r\n`;
+                    </text>
+            }
+
+            // Create download link
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `patients_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+
+            // Trigger download
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Show export loading state
+        function showExportLoading(format) {
+            const originalText = event.target.innerHTML;
+            event.target.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i>Generating ${format}...`;
+            event.target.disabled = true;
+
+            setTimeout(() => {
+                event.target.innerHTML = originalText;
+                event.target.disabled = false;
+            }, 2000);
+        }
+
+        // Enhanced export functions with loading states
+        function exportToPDF() {
+            showExportLoading('PDF');
+            setTimeout(() => {
+                // ... existing PDF code ...
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                doc.setFontSize(18);
+                doc.text('Patient List - Clinic Management System', 14, 22);
+                doc.setFontSize(10);
+                doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+
+                const tableColumn = ["ID", "Name", "Age", "Phone", "Email", "Registration Date", "Status"];
+                const tableRows = [];
+
+                @foreach (var patient in Model.OrderByDescending(p => p.RegistrationDate))
+                {
+                        <text>
+                        tableRows.push([
+                            "#@patient.PatientId",
+                            "@patient.Name",
+                            "@patient.Age",
+                            "@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)",
+                            "@(patient.User?.Email ?? "No email")",
+                            "@patient.RegistrationDate.ToString("MMM dd, yyyy")",
+                            "Active"
+                        ]);
+                        </text>
+                }
+
+                doc.autoTable({
+                    head: [tableColumn],
+                    body: tableRows,
+                    startY: 40,
+                    theme: 'grid',
+                    styles: { fontSize: 9 },
+                    headStyles: {
+                        fillColor: [79, 115, 223],
+                        textColor: 255,
+                        fontStyle: 'bold'
+                    }
+                });
+
+                doc.save(`patients_${new Date().toISOString().split('T')[0]}.pdf`);
+            }, 1000);
+        }
+
+        function exportToExcel() {
+            showExportLoading('Excel');
+            setTimeout(() => {
+                // ... existing Excel code ...
+                const excelData = [
+                    ["Patient ID", "Name", "Age", "Phone", "Email", "Registration Date", "Status"]
+                ];
+
+                @foreach (var patient in Model.OrderByDescending(p => p.RegistrationDate))
+                {
+                        <text>
+                        excelData.push([
+                            "@patient.PatientId",
+                            "@patient.Name",
+                            "@patient.Age",
+                            "@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)",
+                            "@(patient.User?.Email ?? "No email")",
+                            "@patient.RegistrationDate.ToString("MMM dd, yyyy")",
+                            "Active"
+                        ]);
+                        </text>
+                }
+
+                const ws = XLSX.utils.aoa_to_sheet(excelData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Patients");
+                XLSX.writeFile(wb, `patients_${new Date().toISOString().split('T')[0]}.xlsx`);
+            }, 1000);
+        }
+
+        function exportToCSV() {
+            showExportLoading('CSV');
+            setTimeout(() => {
+                // ... existing CSV code ...
+                let csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += "Patient ID,Name,Age,Phone,Email,Registration Date,Status\r\n";
+
+                @foreach (var patient in Model.OrderByDescending(p => p.RegistrationDate))
+                {
+                        <text>
+                        csvContent += `"@patient.PatientId","@patient.Name","@patient.Age","@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)","@(patient.User?.Email ?? "No email")","@patient.RegistrationDate.ToString("MMM dd, yyyy")","Active"\r\n`;
+                        </text>
+                }
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `patients_${new Date().toISOString().split('T')[0]}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }, 1000);
+        }
+    </script>
+
+    <style>
+        .avatar-circle {
+            font-weight: bold;
+        }
+
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+        }
+
+        .card-header {
+            border-bottom: 1px solid #e3e6f0;
+            border-radius: 10px 10px 0 0 !important;
+        }
+
+        .border-left-primary {
+            border-left: 4px solid #4e73df !important;
+        }
+
+        .border-left-success {
+            border-left: 4px solid #1cc88a !important;
+        }
+
+        .border-left-info {
+            border-left: 4px solid #36b9cc !important;
+        }
+
+        .border-left-warning {
+            border-left: 4px solid #f6c23e !important;
+        }
+
+        .btn-group-sm > .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        /* Export button styling */
+        .dropdown-item:hover {
+            background-color: #4e73df;
+            color: white;
+        }
+    </style>
+}

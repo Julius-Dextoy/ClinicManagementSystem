@@ -1,0 +1,20 @@
+﻿@model string
+
+@functions {
+    public string GetInitials(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return "??";
+        var names = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (names.Length >= 2)
+            return $"{names[0][0]}{names[1][0]}".ToUpper();
+        else if (names.Length == 1)
+            return names[0].Length >= 2 ? names[0].Substring(0, 2).ToUpper() : names[0].ToUpper();
+        else
+            return "??";
+    }
+}
+
+<div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+     style="width: 40px; height: 40px; font-size: 14px;">
+    @GetInitials(Model)
+</div>

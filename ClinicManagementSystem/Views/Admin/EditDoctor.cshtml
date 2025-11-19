@@ -1,0 +1,118 @@
+﻿@model ClinicManagementSystem.Models.EditDoctorViewModel
+
+@{
+    ViewData["Title"] = "Edit Doctor";
+}
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Edit Doctor</h4>
+                <p class="card-subtitle">Update doctor information</p>
+            </div>
+            <div class="card-body">
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form asp-action="EditDoctor" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="DoctorId" />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="Name" class="form-label">Full Name *</label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="Email" class="form-label">Email Address *</label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="Specialization" class="form-label">Specialization *</label>
+                                <input asp-for="Specialization" class="form-control" />
+                                <span asp-validation-for="Specialization" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="Phone" class="form-label">Phone Number *</label>
+                                <input asp-for="Phone" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Address" class="form-label">Address *</label>
+                        <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch">
+                            <label asp-for="IsActive" class="form-check-label">Active Doctor</label>
+                        </div>
+                        <small class="form-text text-muted">
+                            When inactive, the doctor won't be available for new appointments.
+                        </small>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Update Doctor
+                        </button>
+                        <a asp-action="Doctors" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+                        <button type="reset" class="btn btn-outline-secondary">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 5000);
+
+        // Form validation
+        $(document).ready(function() {
+            $('form').on('submit', function() {
+                // Disable submit button to prevent double submission
+                $('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Updating...');
+            });
+        });
+
+        // Phone number formatting
+        $('#Phone').on('input', function() {
+            var phone = $(this).val().replace(/\D/g, '');
+            if (phone.length > 0) {
+                phone = phone.match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+                $(this).val(!phone[2] ? phone[1] : '(' + phone[1] + ') ' + phone[2] + (phone[3] ? '-' + phone[3] : ''));
+            }
+        });
+    </script>
+}

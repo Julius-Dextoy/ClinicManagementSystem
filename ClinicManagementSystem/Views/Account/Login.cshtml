@@ -1,0 +1,153 @@
+﻿@model LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-sign-in-alt"></i> Login to Your Account</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Login" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="form-label fw-bold">Email Address</label>
+                        <input asp-for="Email" class="form-control form-control-lg"
+                               placeholder="Enter your email address" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Password" class="form-label fw-bold">Password</label>
+                        <div class="input-group input-group-lg">
+                            <input asp-for="Password" class="form-control" id="passwordField"
+                                   placeholder="Enter your password" />
+                            <button type="button" class="btn btn-outline-primary" id="togglePassword"
+                                    title="Show password" aria-label="Toggle password visibility">
+                                <i class="fas fa-eye" id="passwordIcon"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                        <div class="form-text">
+                            <small>Click the eye icon to show/hide your password</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3 form-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label">Keep me logged in</label>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-lg w-100 py-2">
+                            <i class="fas fa-sign-in-alt me-2"></i> Login to Account
+                        </button>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <p class="mb-2">
+                            Don't have an account?
+                            <a asp-action="RegisterPatient" class="text-success fw-bold">Register as Patient</a>
+                        </p>
+                        <p class="mb-0">
+                            <a href="#" class="text-muted small">Forgot your password?</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordField = document.getElementById('passwordField');
+            const passwordIcon = document.getElementById('passwordIcon');
+
+            function togglePasswordVisibility() {
+                const isPassword = passwordField.type === 'password';
+
+                // Toggle password field type
+                passwordField.type = isPassword ? 'text' : 'password';
+
+                // Toggle icon and tooltip
+                if (isPassword) {
+                    passwordIcon.classList.remove('fa-eye');
+                    passwordIcon.classList.add('fa-eye-slash');
+                    togglePassword.setAttribute('title', 'Hide password');
+                    togglePassword.classList.remove('btn-outline-primary');
+                    togglePassword.classList.add('btn-primary');
+                } else {
+                    passwordIcon.classList.remove('fa-eye-slash');
+                    passwordIcon.classList.add('fa-eye');
+                    togglePassword.setAttribute('title', 'Show password');
+                    togglePassword.classList.remove('btn-primary');
+                    togglePassword.classList.add('btn-outline-primary');
+                }
+            }
+
+            // Click event
+            togglePassword.addEventListener('click', togglePasswordVisibility);
+
+            // Keyboard accessibility
+            togglePassword.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    togglePasswordVisibility();
+                }
+            });
+
+            // Auto-hide password after 30 seconds for security
+            setInterval(function() {
+                if (passwordField.type === 'text') {
+                    togglePasswordVisibility();
+                }
+            }, 30000);
+
+            // Focus management for better UX
+            passwordField.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+
+            passwordField.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    </script>
+
+    <style>
+        .input-group.focused {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            border-radius: 0.375rem;
+        }
+
+        #togglePassword {
+            transition: all 0.3s ease;
+            border-left: none;
+        }
+
+            #togglePassword:hover {
+                transform: scale(1.05);
+            }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #ced4da;
+        }
+
+        .input-group:focus-within {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            border-radius: 0.375rem;
+        }
+    </style>
+}
