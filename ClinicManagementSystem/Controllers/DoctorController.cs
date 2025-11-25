@@ -17,6 +17,7 @@ namespace ClinicManagementSystem.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<DoctorController> _logger;
 
+        // LABEL: Constructor
         public DoctorController(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
@@ -27,6 +28,7 @@ namespace ClinicManagementSystem.Controllers
             _logger = logger;
         }
 
+        // LABEL: Dashboard
         public async Task<IActionResult> Dashboard()
         {
             try
@@ -71,6 +73,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Appointments List
         public async Task<IActionResult> Appointments()
         {
             try
@@ -102,6 +105,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Update Appointment Status
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateAppointmentStatus(int appointmentId, string status)
@@ -143,6 +147,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Complete Appointment
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CompleteAppointment(int appointmentId)
@@ -184,6 +189,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Patient History
         [HttpGet]
         public async Task<IActionResult> PatientHistory(int patientId)
         {
@@ -232,6 +238,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Add Medical Notes
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddMedicalNotes(MedicalNotesModel model)
@@ -269,6 +276,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Update Appointment
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateAppointment(UpdateAppointmentModel model)
@@ -311,6 +319,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Get Today's Appointments
         [HttpGet]
         public async Task<IActionResult> GetTodayAppointments()
         {
@@ -350,6 +359,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Send Appointment Reminder
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendAppointmentReminder(int appointmentId)

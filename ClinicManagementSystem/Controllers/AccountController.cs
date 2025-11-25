@@ -11,6 +11,7 @@ public class AccountController : Controller
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ApplicationDbContext _context;
 
+    // LABEL: Constructor
     public AccountController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
@@ -21,6 +22,7 @@ public class AccountController : Controller
         _context = context;
     }
 
+    // LABEL: Get Register Patient View
     [HttpGet]
     [AllowAnonymous]
     public IActionResult RegisterPatient()
@@ -28,6 +30,7 @@ public class AccountController : Controller
         return View();
     }
 
+    // LABEL: Post Register Patient
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
@@ -76,6 +79,7 @@ public class AccountController : Controller
         return View(model);
     }
 
+    // LABEL: Get Login View
     [HttpGet]
     [AllowAnonymous]
     public IActionResult Login(string returnUrl = null)
@@ -84,6 +88,7 @@ public class AccountController : Controller
         return View();
     }
 
+    // LABEL: Post Login
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
@@ -108,6 +113,7 @@ public class AccountController : Controller
         return View(model);
     }
 
+    // LABEL: Logout
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
@@ -116,6 +122,7 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
+    // LABEL: Redirect To Local
     private IActionResult RedirectToLocal(string returnUrl)
     {
         if (Url.IsLocalUrl(returnUrl))
@@ -126,13 +133,5 @@ public class AccountController : Controller
         {
             return RedirectToAction("Index", "Home");
         }
-    
-    
     }
-
-
-
-
-
-
 }

@@ -199,6 +199,7 @@ else
 }
 
 @functions {
+    // LABEL: GetStatusBadge Function
     public string GetStatusBadge(string status)
     {
         return status switch
@@ -211,6 +212,7 @@ else
         };
     }
 
+    // LABEL: GetInitials Function
     public string GetInitials(string name)
     {
         if (string.IsNullOrEmpty(name))

@@ -13,12 +13,14 @@ namespace ClinicManagementSystem.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HealthController> _logger;
 
+        // LABEL: Constructor
         public HealthController(ApplicationDbContext context, ILogger<HealthController> logger)
         {
             _context = context;
             _logger = logger;
         }
 
+        // LABEL: Health Check
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -68,6 +70,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Ping
         [HttpGet("ping")]
         public IActionResult Ping()
         {

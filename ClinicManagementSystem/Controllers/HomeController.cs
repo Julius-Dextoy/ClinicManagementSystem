@@ -8,11 +8,13 @@ namespace ClinicManagementSystem.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
+        // LABEL: Constructor
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
         }
 
+        // LABEL: Index
         public IActionResult Index()
         {
             if (User.Identity.IsAuthenticated)
@@ -27,11 +29,13 @@ namespace ClinicManagementSystem.Controllers
             return View();
         }
 
+        // LABEL: Privacy
         public IActionResult Privacy()
         {
             return View();
         }
 
+        // LABEL: Error
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

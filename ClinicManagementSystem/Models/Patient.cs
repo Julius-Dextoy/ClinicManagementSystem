@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClinicManagementSystem.Models
 {
+    // LABEL: Patient Model
     public class Patient
     {
         public int PatientId { get; set; }

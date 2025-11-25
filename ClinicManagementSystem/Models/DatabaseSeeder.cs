@@ -7,6 +7,7 @@ namespace ClinicManagementSystem.Models
 {
     public class DatabaseSeeder
     {
+        // LABEL: Seed Roles
         public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
             // Check if roles already exist
@@ -26,6 +27,7 @@ namespace ClinicManagementSystem.Models
             }
         }
 
+        // LABEL: Seed Admin User
         public static async Task SeedAdminUserAsync(UserManager<ApplicationUser> userManager)
         {
             // Check if admin user exists

@@ -29,14 +29,6 @@
         </div>
     }
 
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
     <!-- Statistics Cards -->
     <div class="row mb-4">
         <div class="col-xl-3 col-md-6 mb-4">
@@ -407,17 +399,17 @@
 
             @foreach (var patient in Model.OrderByDescending(p => p.RegistrationDate))
             {
-                    <text>
-                    tableRows.push([
-                        "#@patient.PatientId",
-                        "@patient.Name",
-                        "@patient.Age",
-                        "@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)",
-                        "@(patient.User?.Email ?? "No email")",
-                        "@patient.RegistrationDate.ToString("MMM dd, yyyy")",
-                        "Active"
-                    ]);
-                    </text>
+                        <text>
+                        tableRows.push([
+                            "#@patient.PatientId",
+                            "@patient.Name",
+                            "@patient.Age",
+                            "@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)",
+                            "@(patient.User?.Email ?? "No email")",
+                            "@patient.RegistrationDate.ToString("MMM dd, yyyy")",
+                            "Active"
+                        ]);
+                        </text>
             }
 
             // Add table
@@ -464,19 +456,19 @@
 
             @foreach (var patient in Model.OrderByDescending(p => p.RegistrationDate))
             {
-                    <text>
-                    excelData.push([
-                        "@patient.PatientId",
-                        "@patient.Name",
-                        "@patient.Age",
-                        "@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)",
-                        "@(patient.User?.Email ?? "No email")",
-                        "@(string.IsNullOrEmpty(patient.Address) ? "Not provided" : patient.Address.Replace("\"", "'"))",
-                        "@(string.IsNullOrEmpty(patient.MedicalHistory) ? "Not provided" : patient.MedicalHistory.Replace("\"", "'"))",
-                        "@patient.RegistrationDate.ToString("MMM dd, yyyy hh:mm tt")",
-                        "Active"
-                    ]);
-                    </text>
+                        <text>
+                        excelData.push([
+                            "@patient.PatientId",
+                            "@patient.Name",
+                            "@patient.Age",
+                            "@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)",
+                            "@(patient.User?.Email ?? "No email")",
+                            "@(string.IsNullOrEmpty(patient.Address) ? "Not provided" : patient.Address.Replace("\"", "'"))",
+                            "@(string.IsNullOrEmpty(patient.MedicalHistory) ? "Not provided" : patient.MedicalHistory.Replace("\"", "'"))",
+                            "@patient.RegistrationDate.ToString("MMM dd, yyyy hh:mm tt")",
+                            "Active"
+                        ]);
+                        </text>
             }
 
             // Create workbook and worksheet
@@ -510,9 +502,9 @@
             // Add data rows
             @foreach (var patient in Model.OrderByDescending(p => p.RegistrationDate))
             {
-                    <text>
-                    csvContent += `"@patient.PatientId","@patient.Name","@patient.Age","@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)","@(patient.User?.Email ?? "No email")","@patient.RegistrationDate.ToString("MMM dd, yyyy")","Active"\r\n`;
-                    </text>
+                        <text>
+                        csvContent += `"@patient.PatientId","@patient.Name","@patient.Age","@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)","@(patient.User?.Email ?? "No email")","@patient.RegistrationDate.ToString("MMM dd, yyyy")","Active"\r\n`;
+                        </text>
             }
 
             // Create download link
@@ -557,17 +549,17 @@
 
                 @foreach (var patient in Model.OrderByDescending(p => p.RegistrationDate))
                 {
-                        <text>
-                        tableRows.push([
-                            "#@patient.PatientId",
-                            "@patient.Name",
-                            "@patient.Age",
-                            "@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)",
-                            "@(patient.User?.Email ?? "No email")",
-                            "@patient.RegistrationDate.ToString("MMM dd, yyyy")",
-                            "Active"
-                        ]);
-                        </text>
+                            <text>
+                            tableRows.push([
+                                "#@patient.PatientId",
+                                "@patient.Name",
+                                "@patient.Age",
+                                "@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)",
+                                "@(patient.User?.Email ?? "No email")",
+                                "@patient.RegistrationDate.ToString("MMM dd, yyyy")",
+                                "Active"
+                            ]);
+                            </text>
                 }
 
                 doc.autoTable({
@@ -597,17 +589,17 @@
 
                 @foreach (var patient in Model.OrderByDescending(p => p.RegistrationDate))
                 {
-                        <text>
-                        excelData.push([
-                            "@patient.PatientId",
-                            "@patient.Name",
-                            "@patient.Age",
-                            "@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)",
-                            "@(patient.User?.Email ?? "No email")",
-                            "@patient.RegistrationDate.ToString("MMM dd, yyyy")",
-                            "Active"
-                        ]);
-                        </text>
+                            <text>
+                            excelData.push([
+                                "@patient.PatientId",
+                                "@patient.Name",
+                                "@patient.Age",
+                                "@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)",
+                                "@(patient.User?.Email ?? "No email")",
+                                "@patient.RegistrationDate.ToString("MMM dd, yyyy")",
+                                "Active"
+                            ]);
+                            </text>
                 }
 
                 const ws = XLSX.utils.aoa_to_sheet(excelData);
@@ -626,9 +618,9 @@
 
                 @foreach (var patient in Model.OrderByDescending(p => p.RegistrationDate))
                 {
-                        <text>
-                        csvContent += `"@patient.PatientId","@patient.Name","@patient.Age","@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)","@(patient.User?.Email ?? "No email")","@patient.RegistrationDate.ToString("MMM dd, yyyy")","Active"\r\n`;
-                        </text>
+                            <text>
+                            csvContent += `"@patient.PatientId","@patient.Name","@patient.Age","@(string.IsNullOrEmpty(patient.Phone) ? "Not provided" : patient.Phone)","@(patient.User?.Email ?? "No email")","@patient.RegistrationDate.ToString("MMM dd, yyyy")","Active"\r\n`;
+                            </text>
                 }
 
                 const encodedUri = encodeURI(csvContent);

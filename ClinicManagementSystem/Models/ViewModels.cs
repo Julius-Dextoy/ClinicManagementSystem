@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClinicManagementSystem.Models
 {
+    // LABEL: Admin Dashboard View Model
     public class AdminDashboardViewModel
     {
         public int TotalDoctors { get; set; }
@@ -13,6 +14,7 @@ namespace ClinicManagementSystem.Models
         public List<Appointment> RecentAppointments { get; set; } = new List<Appointment>();
     }
 
+    // LABEL: Doctor View Model
     public class DoctorViewModel
     {
         [Required(ErrorMessage = "Full name is required")]
@@ -42,6 +44,7 @@ namespace ClinicManagementSystem.Models
         public string Address { get; set; }
     }
 
+    // LABEL: Edit Doctor View Model
     public class EditDoctorViewModel
     {
         public int DoctorId { get; set; }
@@ -76,6 +79,7 @@ namespace ClinicManagementSystem.Models
         public bool IsActive { get; set; } = true;
     }
 
+    // LABEL: Doctor Dashboard View Model
     public class DoctorDashboardViewModel
     {
         public Doctor Doctor { get; set; }
@@ -83,6 +87,7 @@ namespace ClinicManagementSystem.Models
         public List<Appointment> UpcomingAppointments { get; set; } = new List<Appointment>();
     }
 
+    // LABEL: Book Appointment View Model
     public class BookAppointmentViewModel
     {
         [Required(ErrorMessage = "Please select a doctor")]
@@ -106,6 +111,7 @@ namespace ClinicManagementSystem.Models
         public List<TimeSpan> AvailableTimeSlots { get; set; } = new List<TimeSpan>();
     }
 
+    // LABEL: Login View Model
     public class LoginViewModel
     {
         [Required(ErrorMessage = "Email is required")]
@@ -120,6 +126,7 @@ namespace ClinicManagementSystem.Models
         public bool RememberMe { get; set; }
     }
 
+    // LABEL: Register Patient View Model
     public class RegisterPatientViewModel
     {
         [Required(ErrorMessage = "Full name is required")]
@@ -162,12 +169,14 @@ namespace ClinicManagementSystem.Models
         public string MedicalHistory { get; set; }
     }
 
+    // LABEL: Patient Details View Model
     public class PatientDetailsViewModel
     {
         public Patient Patient { get; set; }
         public List<Appointment> Appointments { get; set; } = new List<Appointment>();
     }
 
+    // LABEL: System User View Model
     public class SystemUserViewModel
     {
         public string Id { get; set; }
@@ -178,6 +187,7 @@ namespace ClinicManagementSystem.Models
         public List<string> Roles { get; set; } = new List<string>();
     }
 
+    // LABEL: Reports View Model
     public class ReportsViewModel
     {
         public Dictionary<string, int> TotalAppointmentsByStatus { get; set; } = new Dictionary<string, int>();
@@ -185,6 +195,7 @@ namespace ClinicManagementSystem.Models
         public List<Patient> RecentRegistrations { get; set; } = new List<Patient>();
     }
 
+    // LABEL: Error View Model
     public class ErrorViewModel
     {
         public string RequestId { get; set; }

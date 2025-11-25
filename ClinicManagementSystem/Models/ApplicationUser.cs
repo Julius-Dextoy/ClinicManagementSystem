@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClinicManagementSystem.Models
 {
+    // LABEL: ApplicationUser Model
     public class ApplicationUser : IdentityUser
     {
         [StringLength(100)]
@@ -17,6 +18,7 @@ namespace ClinicManagementSystem.Models
         public Patient Patient { get; set; }
     }
 
+    // LABEL: MedicalNotes Model
     public class MedicalNotesModel
     {
         [Required]
@@ -27,6 +29,7 @@ namespace ClinicManagementSystem.Models
         public string Notes { get; set; }
     }
 
+    // LABEL: UpdateAppointment Model
     public class UpdateAppointmentModel
     {
         [Required]
@@ -40,6 +43,7 @@ namespace ClinicManagementSystem.Models
         public string Notes { get; set; }
     }
 
+    // LABEL: UserRoleUpdate Model
     public class UserRoleUpdateModel
     {
         [Required]
@@ -49,6 +53,7 @@ namespace ClinicManagementSystem.Models
         public List<string> Roles { get; set; } = new List<string>();
     }
 
+    // LABEL: BulkMessage Model
     public class BulkMessageModel
     {
         [Required]

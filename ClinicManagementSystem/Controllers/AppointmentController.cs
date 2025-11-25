@@ -17,6 +17,7 @@ namespace ClinicManagementSystem.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<AppointmentController> _logger;
 
+        // LABEL: Constructor
         public AppointmentController(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
@@ -27,6 +28,7 @@ namespace ClinicManagementSystem.Controllers
             _logger = logger;
         }
 
+        // LABEL: Get Book Appointment View
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> Book()
         {
@@ -54,7 +56,6 @@ namespace ClinicManagementSystem.Controllers
                 _logger.LogError(ex, "Error loading booking page");
                 TempData["ErrorMessage"] = $"Error loading booking page: {ex.Message}";
 
-                // Return properly initialized model even on error
                 return View(new BookAppointmentViewModel
                 {
                     Doctors = new List<Doctor>(),
@@ -63,6 +64,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Post Book Appointment
         [HttpPost]
         [Authorize(Roles = "Patient")]
         [ValidateAntiForgeryToken]
@@ -70,7 +72,6 @@ namespace ClinicManagementSystem.Controllers
         {
             try
             {
-                // ALWAYS populate Doctors and AvailableTimeSlots FIRST
                 model.Doctors = await _context.Doctors.Where(d => d.IsActive).ToListAsync();
                 model.AvailableTimeSlots = GetTimeSlots();
 
@@ -93,7 +94,6 @@ namespace ClinicManagementSystem.Controllers
                     return View(model);
                 }
 
-                // Use the execution strategy to handle transactions
                 var executionStrategy = _context.Database.CreateExecutionStrategy();
                 var successMessage = "";
 
@@ -111,7 +111,6 @@ namespace ClinicManagementSystem.Controllers
                             throw new Exception("User not found! Please log in again.");
                         }
 
-                        // Get or create patient profile
                         _logger.LogInformation("STEP 2: Finding or creating patient profile");
                         var patient = await _context.Patients.FirstOrDefaultAsync(p => p.UserId == user.Id);
 
@@ -137,7 +136,6 @@ namespace ClinicManagementSystem.Controllers
                             _logger.LogInformation("Patient profile exists - ID: {PatientId}", patient.PatientId);
                         }
 
-                        // Validate the doctor exists and is active
                         _logger.LogInformation("STEP 3: Validating doctor ID: {DoctorId}", model.DoctorId);
                         var doctor = await _context.Doctors
                             .FirstOrDefaultAsync(d => d.DoctorId == model.DoctorId && d.IsActive);
@@ -149,7 +147,6 @@ namespace ClinicManagementSystem.Controllers
                         }
                         _logger.LogInformation("Doctor validated - Name: {DoctorName}", doctor.Name);
 
-                        // Validate appointment date
                         _logger.LogInformation("STEP 4: Validating appointment date: {AppointmentDate}", model.AppointmentDate);
                         if (model.AppointmentDate < DateTime.Today)
                         {
@@ -157,7 +154,6 @@ namespace ClinicManagementSystem.Controllers
                             throw new Exception("Appointment date cannot be in the past.");
                         }
 
-                        // Check for time slot availability
                         _logger.LogInformation("STEP 5: Checking time slot availability");
                         var existingAppointment = await _context.Appointments
                             .Where(a => a.DoctorId == model.DoctorId &&
@@ -174,7 +170,6 @@ namespace ClinicManagementSystem.Controllers
                         }
                         _logger.LogInformation("Time slot is available");
 
-                        // Create the appointment
                         _logger.LogInformation("STEP 6: Creating appointment object");
                         var appointment = new Appointment
                         {
@@ -214,13 +209,13 @@ namespace ClinicManagementSystem.Controllers
                 _logger.LogError(ex, "Error in Book POST method");
                 TempData["ErrorMessage"] = $"An error occurred while booking the appointment: {ex.Message}";
 
-                // Ensure model is populated even in outer catch
                 model.Doctors = await _context.Doctors.Where(d => d.IsActive).ToListAsync();
                 model.AvailableTimeSlots = GetTimeSlots();
                 return View(model);
             }
         }
 
+        // LABEL: My Appointments
         public async Task<IActionResult> MyAppointments()
         {
             try
@@ -301,6 +296,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: All Appointments (Admin)
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AllAppointments()
         {
@@ -326,6 +322,34 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Manage Appointments (Admin)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ManageAppointments()
+        {
+            try
+            {
+                _logger.LogInformation("Loading appointments for management");
+
+                var appointments = await _context.Appointments
+                    .Include(a => a.Doctor)
+                    .Include(a => a.Patient)
+                    .ThenInclude(p => p.User)
+                    .OrderByDescending(a => a.AppointmentDate)
+                    .ThenBy(a => a.AppointmentTime)
+                    .ToListAsync();
+
+                _logger.LogInformation("Found {Count} appointments for management", appointments.Count);
+                return View(appointments);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading appointments for management");
+                TempData["ErrorMessage"] = $"Error loading appointments: {ex.Message}";
+                return View(new List<Appointment>());
+            }
+        }
+
+        // LABEL: Cancel Appointment
         [HttpPost]
         [Authorize(Roles = "Patient")]
         [ValidateAntiForgeryToken]
@@ -392,6 +416,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Delete Appointment (Admin)
         [HttpPost]
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
@@ -410,7 +435,7 @@ namespace ClinicManagementSystem.Controllers
                 {
                     _logger.LogWarning("Appointment {AppointmentId} not found for deletion", id);
                     TempData["ErrorMessage"] = "Appointment not found!";
-                    return RedirectToAction("AllAppointments");
+                    return RedirectToAction("ManageAppointments");
                 }
 
                 _context.Appointments.Remove(appointment);
@@ -418,16 +443,17 @@ namespace ClinicManagementSystem.Controllers
 
                 _logger.LogInformation("Appointment {AppointmentId} deleted successfully by admin", id);
                 TempData["SuccessMessage"] = $"Appointment #{appointment.AppointmentId} has been deleted successfully!";
-                return RedirectToAction("AllAppointments");
+                return RedirectToAction("ManageAppointments");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting appointment {AppointmentId}", id);
                 TempData["ErrorMessage"] = $"Error deleting appointment: {ex.Message}";
-                return RedirectToAction("AllAppointments");
+                return RedirectToAction("ManageAppointments");
             }
         }
 
+        // LABEL: Bulk Delete Appointments (Admin)
         [HttpPost]
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
@@ -438,7 +464,7 @@ namespace ClinicManagementSystem.Controllers
                 if (appointmentIds == null || !appointmentIds.Any())
                 {
                     TempData["ErrorMessage"] = "No appointments selected for deletion!";
-                    return RedirectToAction("AllAppointments");
+                    return RedirectToAction("ManageAppointments");
                 }
 
                 _logger.LogInformation("Admin bulk deleting {Count} appointments", appointmentIds.Count);
@@ -452,7 +478,7 @@ namespace ClinicManagementSystem.Controllers
                 if (!appointments.Any())
                 {
                     TempData["ErrorMessage"] = "No valid appointments found for deletion!";
-                    return RedirectToAction("AllAppointments");
+                    return RedirectToAction("ManageAppointments");
                 }
 
                 _context.Appointments.RemoveRange(appointments);
@@ -460,16 +486,17 @@ namespace ClinicManagementSystem.Controllers
 
                 _logger.LogInformation("Successfully deleted {Count} appointments", appointments.Count);
                 TempData["SuccessMessage"] = $"Successfully deleted {appointments.Count} appointment(s)!";
-                return RedirectToAction("AllAppointments");
+                return RedirectToAction("ManageAppointments");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in bulk appointment deletion");
                 TempData["ErrorMessage"] = $"Error deleting appointments: {ex.Message}";
-                return RedirectToAction("AllAppointments");
+                return RedirectToAction("ManageAppointments");
             }
         }
 
+        // LABEL: Appointment Details
         [HttpGet]
         public async Task<IActionResult> AppointmentDetails(int id)
         {
@@ -489,7 +516,6 @@ namespace ClinicManagementSystem.Controllers
                     return RedirectToAction("MyAppointments");
                 }
 
-                // Check if user has permission to view this appointment
                 var user = await _userManager.GetUserAsync(User);
                 if (User.IsInRole("Patient"))
                 {
@@ -525,6 +551,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Reschedule Appointment
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RescheduleAppointment(int appointmentId, DateTime newDate, TimeSpan newTime)
@@ -565,7 +592,6 @@ namespace ClinicManagementSystem.Controllers
                     return Json(new { success = false, message = "Cannot reschedule to a past date" });
                 }
 
-                // Check if new time slot is available
                 var existingAppointment = await _context.Appointments
                     .Where(a => a.DoctorId == appointment.DoctorId &&
                                a.AppointmentDate == newDate &&
@@ -582,7 +608,7 @@ namespace ClinicManagementSystem.Controllers
 
                 appointment.AppointmentDate = newDate;
                 appointment.AppointmentTime = newTime;
-                appointment.Status = "Pending"; // Reset to pending for approval
+                appointment.Status = "Pending";
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Appointment {AppointmentId} rescheduled successfully", appointmentId);
@@ -595,6 +621,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Update Appointment Status
         [HttpPost]
         [Authorize(Roles = "Doctor,Admin")]
         [ValidateAntiForgeryToken]
@@ -604,11 +631,11 @@ namespace ClinicManagementSystem.Controllers
             {
                 _logger.LogInformation("Updating appointment {AppointmentId} status to {Status}", appointmentId, status);
 
-                // Validate status
                 var validStatuses = new[] { "Pending", "Confirmed", "Completed", "Cancelled" };
                 if (!validStatuses.Contains(status))
                 {
-                    return Json(new { success = false, message = "Invalid status provided." });
+                    TempData["ErrorMessage"] = "Invalid status provided.";
+                    return RedirectToAction("ManageAppointments");
                 }
 
                 var user = await _userManager.GetUserAsync(User);
@@ -616,7 +643,6 @@ namespace ClinicManagementSystem.Controllers
 
                 if (User.IsInRole("Admin"))
                 {
-                    // Admin can update any appointment
                     appointment = await _context.Appointments
                         .Include(a => a.Doctor)
                         .Include(a => a.Patient)
@@ -624,12 +650,12 @@ namespace ClinicManagementSystem.Controllers
                 }
                 else
                 {
-                    // Doctor can only update their own appointments
                     var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.UserId == user.Id);
                     if (doctor == null)
                     {
                         _logger.LogError("Doctor not found for status update");
-                        return Json(new { success = false, message = "Doctor not found" });
+                        TempData["ErrorMessage"] = "Doctor not found";
+                        return RedirectToAction("MyAppointments");
                     }
 
                     appointment = await _context.Appointments
@@ -641,7 +667,8 @@ namespace ClinicManagementSystem.Controllers
                 if (appointment == null)
                 {
                     _logger.LogError("Appointment {AppointmentId} not found for status update", appointmentId);
-                    return Json(new { success = false, message = "Appointment not found" });
+                    TempData["ErrorMessage"] = "Appointment not found";
+                    return User.IsInRole("Admin") ? RedirectToAction("ManageAppointments") : RedirectToAction("MyAppointments");
                 }
 
                 var oldStatus = appointment.Status;
@@ -651,20 +678,34 @@ namespace ClinicManagementSystem.Controllers
                 _logger.LogInformation("Appointment {AppointmentId} status updated from {OldStatus} to {NewStatus}",
                     appointmentId, oldStatus, status);
 
-                return Json(new
+                TempData["SuccessMessage"] = $"Appointment status updated to {status.ToLower()} successfully!";
+
+                if (User.IsInRole("Admin"))
                 {
-                    success = true,
-                    message = $"Appointment status updated to {status.ToLower()} successfully!",
-                    newStatus = status
-                });
+                    return RedirectToAction("ManageAppointments");
+                }
+                else
+                {
+                    return RedirectToAction("MyAppointments");
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating appointment {AppointmentId} status", appointmentId);
-                return Json(new { success = false, message = $"Error: {ex.Message}" });
+                TempData["ErrorMessage"] = $"Error updating appointment status: {ex.Message}";
+
+                if (User.IsInRole("Admin"))
+                {
+                    return RedirectToAction("ManageAppointments");
+                }
+                else
+                {
+                    return RedirectToAction("MyAppointments");
+                }
             }
         }
 
+        // LABEL: Complete Appointment
         [HttpPost]
         [Authorize(Roles = "Doctor,Admin")]
         [ValidateAntiForgeryToken]
@@ -722,6 +763,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Get Available Time Slots
         [HttpGet]
         public async Task<IActionResult> GetAvailableTimeSlots(int doctorId, DateTime date)
         {
@@ -735,7 +777,6 @@ namespace ClinicManagementSystem.Controllers
                     return Json(new { success = false, message = "Cannot book appointments in the past" });
                 }
 
-                // Check if doctor exists and is active
                 var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.DoctorId == doctorId && d.IsActive);
                 if (doctor == null)
                 {
@@ -769,6 +810,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Send Appointment Reminder
         [HttpPost]
         [Authorize(Roles = "Doctor,Admin")]
         public async Task<IActionResult> SendAppointmentReminder(int appointmentId)
@@ -788,11 +830,7 @@ namespace ClinicManagementSystem.Controllers
                     return Json(new { success = false, message = "Appointment not found" });
                 }
 
-                // Simulate sending reminder (in real app, integrate with email/SMS service)
                 _logger.LogInformation("Reminder simulation for appointment {AppointmentId}", appointmentId);
-
-                // You would typically call your email service here
-                // await _emailService.SendAppointmentReminder(appointment);
 
                 _logger.LogInformation("Reminder sent for appointment {AppointmentId}", appointmentId);
                 return Json(new
@@ -808,6 +846,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Debug Info
         [Authorize]
         public async Task<IActionResult> DebugInfo()
         {
@@ -843,6 +882,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Test Booking
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> TestBooking()
         {
@@ -857,7 +897,6 @@ namespace ClinicManagementSystem.Controllers
 
                 if (firstDoctor != null && patient != null)
                 {
-                    // Find an available time slot tomorrow
                     var tomorrow = DateTime.Today.AddDays(1);
                     var availableSlots = await GetAvailableTimeSlotsForDoctor(firstDoctor.DoctorId, tomorrow);
                     var firstAvailableSlot = availableSlots.FirstOrDefault();
@@ -905,6 +944,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Get Available Time Slots For Doctor
         private async Task<List<TimeSpan>> GetAvailableTimeSlotsForDoctor(int doctorId, DateTime date)
         {
             var bookedSlots = await _context.Appointments
@@ -918,11 +958,12 @@ namespace ClinicManagementSystem.Controllers
             return allSlots.Where(slot => !bookedSlots.Contains(slot)).ToList();
         }
 
+        // LABEL: Get Time Slots
         private List<TimeSpan> GetTimeSlots()
         {
             var timeSlots = new List<TimeSpan>();
-            var startTime = new TimeSpan(9, 0, 0); // 9:00 AM
-            var endTime = new TimeSpan(17, 0, 0);  // 5:00 PM
+            var startTime = new TimeSpan(9, 0, 0);
+            var endTime = new TimeSpan(17, 0, 0);
 
             for (var time = startTime; time <= endTime; time = time.Add(new TimeSpan(0, 30, 0)))
             {

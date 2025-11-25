@@ -20,14 +20,14 @@ namespace ClinicManagementSystem.Models
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure Identity tables first
+            // LABEL: Configure ApplicationUser
             modelBuilder.Entity<ApplicationUser>(entity =>
             {
                 entity.Property(u => u.FullName).HasMaxLength(100);
                 entity.Property(u => u.CreatedAt).IsRequired();
             });
 
-            // Patient configuration
+            // LABEL: Configure Patient
             modelBuilder.Entity<Patient>(entity =>
             {
                 entity.HasKey(e => e.PatientId);
@@ -48,7 +48,7 @@ namespace ClinicManagementSystem.Models
                 entity.Property(p => p.RegistrationDate).IsRequired();
             });
 
-            // Doctor configuration
+            // LABEL: Configure Doctor
             modelBuilder.Entity<Doctor>(entity =>
             {
                 entity.HasKey(e => e.DoctorId);
@@ -68,7 +68,7 @@ namespace ClinicManagementSystem.Models
                 entity.Property(d => d.IsActive).HasDefaultValue(true);
             });
 
-            // Appointment configuration
+            // LABEL: Configure Appointment
             modelBuilder.Entity<Appointment>(entity =>
             {
                 entity.HasKey(e => e.AppointmentId);
@@ -92,6 +92,7 @@ namespace ClinicManagementSystem.Models
                 entity.HasIndex(a => a.Status);
             });
 
+            // LABEL: Note about Role Seeding
             // REMOVED: Role seeding - we'll handle this separately
             // The issue is that roles are inserted before unique indexes are created
         }

@@ -2,269 +2,672 @@
     ViewData["Title"] = "Welcome to Tooth Fairies Dental Clinic";
 }
 
-<div class="hero-section bg-info text-white py-5 mb-5">
+<!-- Modern Hero Section -->
+<section class="hero-section min-vh-100 d-flex align-items-center">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">Bright Smiles Made Simple</h1>
-                <p class="lead mb-4">Experience exceptional dental care with our magical touch. Book appointments, manage treatments, and achieve your perfect smile effortlessly.</p>
-                <div class="d-flex gap-3 flex-wrap">
-                    @if (!User.Identity.IsAuthenticated)
-                    {
-                        <a asp-controller="Account" asp-action="RegisterPatient" class="btn btn-light btn-lg px-4">
-                            <i class="fas fa-tooth me-2"></i>Register as Patient
-                        </a>
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg px-4">
-                            <i class="fas fa-sign-in-alt me-2"></i>Login
-                        </a>
-                    }
-                    else
-                    {
-                        <a href="@Url.Action("Book", "Appointment")" class="btn btn-light btn-lg px-4">
-                            <i class="fas fa-calendar-plus me-2"></i>Book Appointment
-                        </a>
-                    }
+                <div class="hero-content">
+                    <div class="badge bg-light text-primary mb-3 px-3 py-2 rounded-pill">
+                        <i class="fas fa-sparkles me-2"></i>Magical Dental Experience
+                    </div>
+                    <h1 class="display-3 fw-bold text-white mb-4">Your Perfect Smile Journey Starts Here</h1>
+                    <p class="lead text-light mb-4 opacity-75">Transform your dental care with our innovative platform. Easy appointments, expert dentists, and magical results.</p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <a asp-controller="Account" asp-action="RegisterPatient" class="btn btn-light btn-lg px-4 py-3 rounded-pill fw-bold">
+                                <i class="fas fa-rocket me-2"></i>Get Started Free
+                            </a>
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill border-2">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Book", "Appointment")" class="btn btn-light btn-lg px-4 py-3 rounded-pill fw-bold">
+                                <i class="fas fa-calendar-plus me-2"></i>Book Appointment
+                            </a>
+                        }
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-6 text-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/2997/2997892.png" alt="Dental Care" class="img-fluid" style="max-height: 300px;">
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container">
-    <!-- Features Section -->
-    <div class="row mb-5">
-        <div class="col-12 text-center mb-5">
-            <h2 class="fw-bold text-info">Why Choose Tooth Fairies?</h2>
-            <p class="text-muted">Experience dental care that feels truly magical</p>
-        </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center p-4">
-                    <div class="feature-icon bg-info bg-gradient text-white rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-tooth fa-2x"></i>
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <div class="floating-elements">
+                        <div class="floating-tooth">
+                            <i class="fas fa-tooth"></i>
+                        </div>
+                        <div class="floating-star">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="floating-heart">
+                            <i class="fas fa-heart"></i>
+                        </div>
                     </div>
-                    <h4 class="fw-bold">Pain-Free Treatments</h4>
-                    <p class="text-muted">Experience comfortable dental care with our advanced pain management techniques.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center p-4">
-                    <div class="feature-icon bg-success bg-gradient text-white rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-user-md fa-2x"></i>
-                    </div>
-                    <h4 class="fw-bold">Expert Dentists</h4>
-                    <p class="text-muted">Our magical team of dental specialists will make your smile dreams come true.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center p-4">
-                    <div class="feature-icon bg-warning bg-gradient text-white rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-magic fa-2x"></i>
-                    </div>
-                    <h4 class="fw-bold">Magical Experience</h4>
-                    <p class="text-muted">Transform your dental visits into pleasant experiences with our fairy-tale approach.</p>
+                    <img src="https://cdn-icons-png.flaticon.com/512/2964/2964857.png" alt="Dental Clinic" class="hero-main-image">
                 </div>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- How It Works -->
-    <div class="row mb-5 py-5 bg-light rounded-3">
-        <div class="col-12 text-center mb-4">
-            <h2 class="fw-bold text-info">How It Works</h2>
-            <p class="text-muted">Simple steps to your perfect smile</p>
+<!-- Features Section -->
+<section class="features-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fw-bold">Why Patients Love Us</h2>
+            <p class="section-subtitle">Experience the difference with our patient-first approach</p>
         </div>
-
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="text-center">
-                <div class="step-number bg-info text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">1</div>
-                <h5 class="fw-bold">Register</h5>
-                <p class="text-muted">Create your patient account in minutes</p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-tooth feature-icon"></i>
+                    </div>
+                    <h4 class="feature-title">Expert Dental Care</h4>
+                    <p class="feature-description">Comprehensive dental treatments from cleaning to advanced procedures</p>
+                </div>
             </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="text-center">
-                <div class="step-number bg-success text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">2</div>
-                <h5 class="fw-bold">Book</h5>
-                <p class="text-muted">Choose your dentist and preferred time</p>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-user-md feature-icon"></i>
+                    </div>
+                    <h4 class="feature-title">Specialized Dentists</h4>
+                    <p class="feature-description">Board-certified dental professionals with years of experience</p>
+                </div>
             </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="text-center">
-                <div class="step-number bg-warning text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">3</div>
-                <h5 class="fw-bold">Visit</h5>
-                <p class="text-muted">Get your magical dental treatment</p>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="text-center">
-                <div class="step-number bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">4</div>
-                <h5 class="fw-bold">Smile</h5>
-                <p class="text-muted">Show off your new beautiful smile</p>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-teeth feature-icon"></i>
+                    </div>
+                    <h4 class="feature-title">Modern Equipment</h4>
+                    <p class="feature-description">State-of-the-art technology for precise diagnosis and treatment</p>
+                </div>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- Quick Stats (Visible to authenticated users) -->
-    @if (User.Identity.IsAuthenticated)
-    {
-        <div class="row mb-5">
-            <div class="col-12 text-center mb-4">
-                <h2 class="fw-bold text-info">Quick Access</h2>
-                <p class="text-muted">Manage your dental care journey</p>
+<!-- Services Section -->
+<section class="services-section py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fw-bold">Our Dental Services</h2>
+            <p class="section-subtitle">Comprehensive care for your entire family</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="service-card text-center">
+                    <div class="service-icon">
+                        <i class="fas fa-tooth"></i>
+                    </div>
+                    <h5>Teeth Cleaning</h5>
+                    <p>Professional cleaning for healthy gums and teeth</p>
+                </div>
             </div>
+            <div class="col-md-3">
+                <div class="service-card text-center">
+                    <div class="service-icon">
+                        <i class="fas fa-tooth"></i>
+                    </div>
+                    <h5>Fillings</h5>
+                    <p>Restore damaged teeth with natural-looking fillings</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="service-card text-center">
+                    <div class="service-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h5>Crowns & Bridges</h5>
+                    <p>Restore your smile with custom dental work</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="service-card text-center">
+                    <div class="service-icon">
+                        <i class="fas fa-teeth-open"></i>
+                    </div>
+                    <h5>Orthodontics</h5>
+                    <p>Straighten teeth for a perfect smile</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-            @if (User.IsInRole("Patient"))
-            {
-                <div class="col-md-6 mb-3">
-                    <div class="card bg-info text-white">
-                        <div class="card-body text-center p-4">
-                            <i class="fas fa-tooth fa-3x mb-3"></i>
-                            <h4>Book Dental Visit</h4>
-                            <p>Schedule a new appointment with our dentists</p>
+<!-- How It Works -->
+<section class="process-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fw-bold">How It Works</h2>
+            <p class="section-subtitle">Four simple steps to your dream smile</p>
+        </div>
+        <div class="process-steps">
+            <div class="process-step">
+                <div class="step-number">01</div>
+                <div class="step-content">
+                    <h4>Create Account</h4>
+                    <p>Sign up in 30 seconds with basic information</p>
+                </div>
+            </div>
+            <div class="process-step">
+                <div class="step-number">02</div>
+                <div class="step-content">
+                    <h4>Choose Dentist</h4>
+                    <p>Select from our expert dental professionals</p>
+                </div>
+            </div>
+            <div class="process-step">
+                <div class="step-number">03</div>
+                <div class="step-content">
+                    <h4>Book Appointment</h4>
+                    <p>Pick your preferred date and time slot</p>
+                </div>
+            </div>
+            <div class="process-step">
+                <div class="step-number">04</div>
+                <div class="step-content">
+                    <h4>Get Treatment</h4>
+                    <p>Receive exceptional dental care</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Actions for Logged-in Users -->
+@if (User.Identity.IsAuthenticated)
+{
+    <section class="quick-actions py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title fw-bold">Quick Actions</h2>
+                <p class="section-subtitle">Manage your dental care journey</p>
+            </div>
+            <div class="row g-4">
+                @if (User.IsInRole("Patient"))
+                {
+                    <div class="col-md-6">
+                        <div class="action-card bg-primary text-white">
+                            <div class="action-icon">
+                                <i class="fas fa-calendar-plus"></i>
+                            </div>
+                            <h4>Book New Visit</h4>
+                            <p>Schedule your next dental appointment</p>
                             <a asp-controller="Appointment" asp-action="Book" class="btn btn-light">Book Now</a>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <div class="card bg-success text-white">
-                        <div class="card-body text-center p-4">
-                            <i class="fas fa-list fa-3x mb-3"></i>
+                    <div class="col-md-6">
+                        <div class="action-card bg-success text-white">
+                            <div class="action-icon">
+                                <i class="fas fa-list"></i>
+                            </div>
                             <h4>My Appointments</h4>
-                            <p>View and manage your scheduled dental visits</p>
+                            <p>View and manage your scheduled visits</p>
                             <a asp-controller="Appointment" asp-action="MyAppointments" class="btn btn-light">View All</a>
                         </div>
                     </div>
-                </div>
-            }
-            else if (User.IsInRole("Doctor"))
-            {
-                <div class="col-md-6 mb-3">
-                    <div class="card bg-info text-white">
-                        <div class="card-body text-center p-4">
-                            <i class="fas fa-tachometer-alt fa-3x mb-3"></i>
-                            <h4>Dentist Dashboard</h4>
-                            <p>Manage your appointments and patient schedule</p>
-                            <a asp-controller="Doctor" asp-action="Dashboard" class="btn btn-light">Go to Dashboard</a>
+                }
+                else if (User.IsInRole("Doctor"))
+                {
+                    <div class="col-md-6">
+                        <div class="action-card bg-primary text-white">
+                            <div class="action-icon">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <h4>Doctor Dashboard</h4>
+                            <p>Manage your schedule and patients</p>
+                            <a asp-controller="Doctor" asp-action="Dashboard" class="btn btn-light">Dashboard</a>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <div class="card bg-warning text-white">
-                        <div class="card-body text-center p-4">
-                            <i class="fas fa-teeth fa-3x mb-3"></i>
-                            <h4>My Appointments</h4>
-                            <p>View and manage your patient appointments</p>
-                            <a asp-controller="Doctor" asp-action="Appointments" class="btn btn-light">View Appointments</a>
+                    <div class="col-md-6">
+                        <div class="action-card bg-warning text-white">
+                            <div class="action-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <h4>My Schedule</h4>
+                            <p>View upcoming appointments</p>
+                            <a asp-controller="Doctor" asp-action="Appointments" class="btn btn-light">View Schedule</a>
                         </div>
                     </div>
-                </div>
-            }
-            else if (User.IsInRole("Admin"))
-            {
-                <div class="col-md-4 mb-3">
-                    <div class="card bg-info text-white">
-                        <div class="card-body text-center p-4">
-                            <i class="fas fa-tachometer-alt fa-3x mb-3"></i>
+                }
+                else if (User.IsInRole("Admin"))
+                {
+                    <div class="col-md-4">
+                        <div class="action-card bg-primary text-white">
+                            <div class="action-icon">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
                             <h4>Admin Dashboard</h4>
-                            <p>Manage the entire dental clinic system</p>
-                            <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-light">Go to Dashboard</a>
+                            <p>System overview and analytics</p>
+                            <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-light">Dashboard</a>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card bg-success text-white">
-                        <div class="card-body text-center p-4">
-                            <i class="fas fa-user-md fa-3x mb-3"></i>
-                            <h4>Manage Dentists</h4>
-                            <p>Add and manage dental professionals</p>
-                            <a asp-controller="Admin" asp-action="Doctors" class="btn btn-light">Manage Dentists</a>
+                    <div class="col-md-4">
+                        <div class="action-card bg-success text-white">
+                            <div class="action-icon">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <h4>Manage Team</h4>
+                            <p>Dentist and staff management</p>
+                            <a asp-controller="Admin" asp-action="Doctors" class="btn btn-light">Manage</a>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card bg-primary text-white">
-                        <div class="card-body text-center p-4">
-                            <i class="fas fa-users fa-3x mb-3"></i>
-                            <h4>View Patients</h4>
-                            <p>Monitor patient registrations and dental records</p>
-                            <a asp-controller="Admin" asp-action="Patients" class="btn btn-light">View Patients</a>
+                    <div class="col-md-4">
+                        <div class="action-card bg-info text-white">
+                            <div class="action-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h4>Patients</h4>
+                            <p>Patient records and management</p>
+                            <a asp-controller="Admin" asp-action="Patients" class="btn btn-light">View All</a>
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
         </div>
-    }
+    </section>
+}
 
-    <!-- Contact Info -->
-    <div class="row py-5">
-        <div class="col-12 text-center mb-4">
-            <h2 class="fw-bold text-info">Contact Information</h2>
+<!-- Contact Section -->
+<section class="contact-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title fw-bold">Get In Touch</h2>
+            <p class="section-subtitle">We're here to help you smile brighter</p>
         </div>
-        <div class="col-md-4 text-center mb-3">
-            <div class="contact-item">
-                <i class="fas fa-map-marker-alt fa-2x text-info mb-3"></i>
-                <h5>Address</h5>
-                <p class="text-muted">Poblacion, Trinidad, Bohol<br>Smile Center, SC 12345</p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="contact-item text-center">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h5>Visit Us</h5>
+                    <p>Poblacion, Trinidad, Bohol<br>Smile Center, SC 12345</p>
+                </div>
             </div>
-        </div>
-        <div class="col-md-4 text-center mb-3">
-            <div class="contact-item">
-                <i class="fas fa-phone fa-2x text-info mb-3"></i>
-                <h5>Phone</h5>
-                <p class="text-muted">(000) 123-4567<br>Mon-Sat: 8AM-6PM</p>
+            <div class="col-md-4">
+                <div class="contact-item text-center">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h5>Call Us</h5>
+                    <p>(000) 123-4567<br>Mon-Sat: 8AM-6PM</p>
+                </div>
             </div>
-        </div>
-        <div class="col-md-4 text-center mb-3">
-            <div class="contact-item">
-                <i class="fas fa-envelope fa-2x text-info mb-3"></i>
-                <h5>Email</h5>
-                <p class="text-muted">smile@toothfairies.com<br>care@toothfairies.com</p>
+            <div class="col-md-4">
+                <div class="contact-item text-center">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h5>Email Us</h5>
+                    <p>smile@toothfairies.com<br>care@toothfairies.com</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
 <style>
+    /* Modern Color Scheme */
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary: #10b981;
+        --accent: #f59e0b;
+        --light: #f8fafc;
+        --dark: #1e293b;
+    }
+
+    /* Hero Section */
     .hero-section {
-        background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);
-        border-radius: 0 0 20px 20px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 50%, #8b5cf6 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><polygon fill="rgba(255,255,255,0.05)" points="0,1000 1000,0 1000,1000"/></svg>');
+            background-size: cover;
+        }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-visual {
+        position: relative;
+        text-align: center;
+    }
+
+    .hero-main-image {
+        max-width: 100%;
+        height: auto;
+        filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
+        animation: float 6s ease-in-out infinite;
+        max-height: 500px;
+    }
+
+    .floating-elements {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .floating-tooth, .floating-star, .floating-heart {
+        position: absolute;
+        font-size: 2rem;
+        color: rgba(255,255,255,0.8);
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .floating-tooth {
+        top: 20%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+
+    .floating-star {
+        top: 60%;
+        right: 20%;
+        animation-delay: 1s;
+    }
+
+    .floating-heart {
+        bottom: 30%;
+        left: 20%;
+        animation-delay: 2s;
+    }
+
+    /* Sections */
+    .section-title {
+        color: var(--dark);
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+        color: #64748b;
+        font-size: 1.1rem;
+    }
+
+    /* Feature Cards */
+    .features-section {
+        background: var(--light);
+    }
+
+    .feature-card {
+        padding: 2rem 1.5rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+    .feature-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
     }
 
     .feature-icon {
-        transition: transform 0.3s ease;
+        font-size: 2rem;
+        color: white;
     }
 
-    .card:hover .feature-icon {
-        transform: scale(1.1);
+    .feature-title {
+        color: var(--dark);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
     }
 
-    .step-number {
-        transition: transform 0.3s ease;
+    .feature-description {
+        color: #64748b;
+        line-height: 1.6;
     }
 
-        .step-number:hover {
-            transform: scale(1.1);
+    /* Service Cards */
+    .service-card {
+        padding: 2rem 1rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
 
+    .service-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--secondary), #059669);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .service-card h5 {
+        color: var(--dark);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .service-card p {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    /* Process Steps */
+    .process-steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .process-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+
+        .process-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+    .step-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+        background: rgba(99, 102, 241, 0.1);
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .step-content h4 {
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .step-content p {
+        color: #64748b;
+        margin: 0;
+    }
+
+    /* Action Cards */
+    .action-card {
+        padding: 2.5rem 2rem;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+    .action-icon {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.9;
+    }
+
+    .action-card h4 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .action-card p {
+        opacity: 0.9;
+        margin-bottom: 2rem;
+    }
+
+    /* Contact Items */
     .contact-item {
-        transition: transform 0.3s ease;
+        padding: 2rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
     }
 
         .contact-item:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
+
+    .contact-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .contact-item h5 {
+        color: var(--dark);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .contact-item p {
+        color: #64748b;
+        margin: 0;
+    }
+
+    /* Animations */
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 50px;
+        font-weight: 600;
+        padding: 0.75rem 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-light:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .hero-section {
+            min-vh-100: auto;
+            padding: 4rem 0;
+        }
+
+        .display-3 {
+            font-size: 2.5rem;
+        }
+
+        .process-steps {
+            grid-template-columns: 1fr;
+        }
+
+        .process-step {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .service-card {
+            margin-bottom: 1rem;
+        }
+    }
 </style>

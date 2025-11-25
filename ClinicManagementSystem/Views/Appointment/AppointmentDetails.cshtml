@@ -336,6 +336,7 @@
 }
 
 @functions {
+    // LABEL: GetStatusBadge Function
     public string GetStatusBadge(string status)
     {
         return status switch
@@ -348,6 +349,7 @@
         };
     }
 
+    // LABEL: GetInitials Function
     public string GetInitials(string name)
     {
         if (string.IsNullOrEmpty(name))
@@ -362,6 +364,7 @@
             return "??";
     }
 
+    // LABEL: GetTimeSlots Function
     public List<TimeSpan> GetTimeSlots()
     {
         var timeSlots = new List<TimeSpan>();

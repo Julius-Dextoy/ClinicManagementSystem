@@ -18,6 +18,7 @@ namespace ClinicManagementSystem.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<AdminController> _logger;
 
+        // LABEL: Constructor
         public AdminController(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
@@ -30,6 +31,7 @@ namespace ClinicManagementSystem.Controllers
             _logger = logger;
         }
 
+        // LABEL: Dashboard
         public IActionResult Dashboard()
         {
             try
@@ -57,6 +59,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Doctors List
         public async Task<IActionResult> Doctors()
         {
             try
@@ -75,12 +78,14 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Get Add Doctor View
         [HttpGet]
         public IActionResult AddDoctor()
         {
             return View();
         }
 
+        // LABEL: Post Add Doctor
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddDoctor(DoctorViewModel model)
@@ -146,6 +151,7 @@ namespace ClinicManagementSystem.Controllers
             return View(model);
         }
 
+        // LABEL: Get Edit Doctor View
         [HttpGet]
         public async Task<IActionResult> EditDoctor(int id)
         {
@@ -182,6 +188,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Post Edit Doctor
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditDoctor(EditDoctorViewModel model)
@@ -238,6 +245,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Delete Doctor
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteDoctor(int id)
@@ -291,6 +299,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Reset Password
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(string userId)
@@ -332,6 +341,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Generate Secure Password
         private string GenerateSecurePassword()
         {
             const string uppercase = "ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -359,6 +369,7 @@ namespace ClinicManagementSystem.Controllers
             return new string(password.OrderBy(x => random.Next()).ToArray());
         }
 
+        // LABEL: Patients List
         public async Task<IActionResult> Patients()
         {
             try
@@ -377,6 +388,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Patient Details
         [HttpGet]
         public async Task<IActionResult> PatientDetails(int id)
         {
@@ -414,6 +426,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Edit Patient
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditPatient(int patientId, string name, int age, string phone, string address, string medicalHistory)
@@ -449,6 +462,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Delete Patient
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeletePatient(int patientId)
@@ -495,6 +509,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Appointments List
         public async Task<IActionResult> Appointments()
         {
             try
@@ -516,6 +531,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Update Appointment Status
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateAppointmentStatus(int appointmentId, string status)
@@ -546,6 +562,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: System Users List
         [HttpGet]
         public async Task<IActionResult> SystemUsers()
         {
@@ -573,6 +590,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Reports View
         [HttpGet]
         public IActionResult Reports()
         {
@@ -604,6 +622,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Update User Roles
         [HttpPost]
         public async Task<IActionResult> UpdateUserRoles([FromBody] UserRoleUpdateModel model)
         {
@@ -628,6 +647,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Toggle Doctor Status
         [HttpPost]
         public async Task<IActionResult> ToggleDoctorStatus(int id)
         {
@@ -653,6 +673,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Export Data
         [HttpPost]
         public async Task<IActionResult> ExportData(string dataType, string format)
         {
@@ -682,6 +703,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Send Bulk Notification
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendBulkNotification(string message, string recipientType)
@@ -709,6 +731,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Generate Report
         [HttpPost]
         public async Task<IActionResult> GenerateReport(string reportType, DateTime? startDate, DateTime? endDate)
         {
@@ -733,6 +756,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Deactivate User
         [HttpPost]
         public async Task<IActionResult> DeactivateUser(string userId)
         {
@@ -756,6 +780,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Send Bulk Message
         [HttpPost]
         public async Task<IActionResult> SendBulkMessage([FromBody] BulkMessageModel model)
         {
@@ -771,6 +796,7 @@ namespace ClinicManagementSystem.Controllers
             }
         }
 
+        // LABEL: Manage Appointments
         [HttpGet]
         public async Task<IActionResult> ManageAppointments()
         {

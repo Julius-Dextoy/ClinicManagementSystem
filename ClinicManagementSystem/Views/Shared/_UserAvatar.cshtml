@@ -1,6 +1,7 @@
 ﻿@model string
 
 @functions {
+    // LABEL: GetInitials Function
     public string GetInitials(string name)
     {
         if (string.IsNullOrEmpty(name)) return "??";

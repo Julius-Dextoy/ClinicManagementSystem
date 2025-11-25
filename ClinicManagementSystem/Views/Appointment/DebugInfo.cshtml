@@ -143,7 +143,7 @@
                                     <td>@appointment.AppointmentDate.ToString("MMM dd, yyyy")</td>
                                     <td>@appointment.AppointmentTime.ToString(@"hh\:mm")</td>
                                     <td>
-                                        <span class="badge bg-@(appointment.Status == "Pending" ? "warning" : appointment.Status == "Approved" ? "success" : appointment.Status == "Completed" ? "info" : "danger")">
+                                        <span class="badge bg-@GetStatusBadge(appointment.Status)">
                                             @appointment.Status
                                         </span>
                                     </td>
@@ -174,3 +174,18 @@
         </a>
     </div>
 </div>
+
+@functions {
+    // LABEL: GetStatusBadge Function
+    public string GetStatusBadge(string status)
+    {
+        return status switch
+        {
+            "Pending" => "warning",
+            "Approved" => "success",
+            "Completed" => "info",
+            "Cancelled" => "danger",
+            _ => "secondary"
+        };
+    }
+}

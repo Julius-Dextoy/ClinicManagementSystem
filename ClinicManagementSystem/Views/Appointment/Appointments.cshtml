@@ -349,6 +349,7 @@
 </div>
 
 @functions {
+    // LABEL: GetInitials Function
     public string GetInitials(string name)
     {
         if (string.IsNullOrEmpty(name))
@@ -363,6 +364,7 @@
             return "??";
     }
 
+    // LABEL: GetStatusBadge Function
     public string GetStatusBadge(string status)
     {
         return status switch

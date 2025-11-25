@@ -14,7 +14,7 @@
         </div>
         <div>
             <a asp-action="Dashboard" asp-controller="Admin" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Back 
+                <i class="fas fa-arrow-left me-2"></i>Back
             </a>
         </div>
     </div>
@@ -172,6 +172,7 @@
 }
 
 @functions {
+    // LABEL: GetStatusBadge Function
     public string GetStatusBadge(string status)
     {
         return status switch
@@ -184,6 +185,7 @@
         };
     }
 
+    // LABEL: GetInitials Function
     public string GetInitials(string name)
     {
         if (string.IsNullOrEmpty(name))

@@ -2,7 +2,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
 
 <script>
-    // Custom validation methods
+    // LABEL: Custom Validation Methods
     $.validator.addMethod("futureDate", function(value, element) {
         if (!value) return true;
         var selectedDate = new Date(value);
@@ -19,7 +19,7 @@
         return hours >= 9 && hours <= 17 && (minutes === 0 || minutes === 30);
     }, "Please select a valid time slot between 9:00 AM and 5:00 PM.");
 
-    // Apply custom validation
+    // LABEL: Form Validation Setup
     $(document).ready(function() {
         $("form").each(function() {
             $(this).validate({

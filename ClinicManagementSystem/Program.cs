@@ -159,7 +159,7 @@ app.MapControllerRoute(
 
 app.MapRazorPages();
 
-// Enhanced database seeding with better error handling
+// LABEL: Database Migration and Seeding
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

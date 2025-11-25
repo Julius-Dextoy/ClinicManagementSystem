@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClinicManagementSystem.Models
 {
+    // LABEL: Doctor Model
     public class Doctor
     {
         public int DoctorId { get; set; }

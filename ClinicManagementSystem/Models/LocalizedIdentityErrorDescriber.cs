@@ -2,8 +2,10 @@
 
 namespace ClinicManagementSystem.Models
 {
+    // LABEL: Localized Identity Error Describer
     public class LocalizedIdentityErrorDescriber : IdentityErrorDescriber
     {
+        // LABEL: Default Error
         public override IdentityError DefaultError()
         {
             return new IdentityError
@@ -13,6 +15,7 @@ namespace ClinicManagementSystem.Models
             };
         }
 
+        // LABEL: Password Too Short
         public override IdentityError PasswordTooShort(int length)
         {
             return new IdentityError
@@ -22,6 +25,7 @@ namespace ClinicManagementSystem.Models
             };
         }
 
+        // LABEL: Password Requires Unique Characters
         public override IdentityError PasswordRequiresUniqueChars(int uniqueChars)
         {
             return new IdentityError
@@ -31,6 +35,7 @@ namespace ClinicManagementSystem.Models
             };
         }
 
+        // LABEL: Password Requires Non-Alphanumeric
         public override IdentityError PasswordRequiresNonAlphanumeric()
         {
             return new IdentityError
@@ -40,6 +45,7 @@ namespace ClinicManagementSystem.Models
             };
         }
 
+        // LABEL: Password Requires Digit
         public override IdentityError PasswordRequiresDigit()
         {
             return new IdentityError
@@ -49,6 +55,7 @@ namespace ClinicManagementSystem.Models
             };
         }
 
+        // LABEL: Password Requires Lowercase
         public override IdentityError PasswordRequiresLower()
         {
             return new IdentityError
@@ -58,6 +65,7 @@ namespace ClinicManagementSystem.Models
             };
         }
 
+        // LABEL: Password Requires Uppercase
         public override IdentityError PasswordRequiresUpper()
         {
             return new IdentityError
@@ -67,6 +75,7 @@ namespace ClinicManagementSystem.Models
             };
         }
 
+        // LABEL: Invalid Email
         public override IdentityError InvalidEmail(string email)
         {
             return new IdentityError
@@ -76,6 +85,7 @@ namespace ClinicManagementSystem.Models
             };
         }
 
+        // LABEL: Duplicate Email
         public override IdentityError DuplicateEmail(string email)
         {
             return new IdentityError
@@ -85,6 +95,7 @@ namespace ClinicManagementSystem.Models
             };
         }
 
+        // LABEL: Duplicate Username
         public override IdentityError DuplicateUserName(string userName)
         {
             return new IdentityError

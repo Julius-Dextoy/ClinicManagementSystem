@@ -5,6 +5,7 @@ namespace ClinicManagementSystem.Models
 {
     public static class SeedData
     {
+        // LABEL: Initialize Seed Data
         public static async Task Initialize(IServiceProvider serviceProvider)
         {
             using (var scope = serviceProvider.CreateScope())
@@ -15,6 +16,7 @@ namespace ClinicManagementSystem.Models
                 // Define roles with correct capitalization
                 string[] roleNames = { "Admin", "Doctor", "Patient" };
 
+                // LABEL: Create Roles
                 // Create roles if they don't exist
                 foreach (var roleName in roleNames)
                 {
@@ -26,6 +28,7 @@ namespace ClinicManagementSystem.Models
                     }
                 }
 
+                // LABEL: Create Admin User
                 // Create default admin user
                 var adminUser = new ApplicationUser
                 {
@@ -47,6 +50,7 @@ namespace ClinicManagementSystem.Models
                     }
                 }
 
+                // LABEL: Create Sample Doctor
                 // Create a sample doctor for testing
                 var doctorUser = new ApplicationUser
                 {
@@ -82,6 +86,7 @@ namespace ClinicManagementSystem.Models
                     }
                 }
 
+                // LABEL: Create Sample Patient
                 // Create a sample patient for testing
                 var patientUser = new ApplicationUser
                 {
